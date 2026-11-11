@@ -1,0 +1,4 @@
+Cohort,Contract manifest samples,Valid prediction samples,Participants,IBD,Controls,Benchmark role and boundary
+HMP2/IBDMDB,388,385,105,281,104,Binary endpoint; longitudinal/repeated; 3 inputs excluded; activity/therapy not harmonized.
+PRISM,220,220,220,164,56,Binary endpoint; one sample/participant; discovery-validation origin audit.
+NielsenHB_2014,396,396,318,148,248,Binary endpoint; repeated subset; fixed projection; clinical and technical metadata incomplete.

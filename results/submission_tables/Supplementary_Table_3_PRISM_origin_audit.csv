@@ -1,0 +1,5 @@
+direction,model,roc_auc_mean,roc_auc_std,average_precision_mean,average_precision_std,brier_mean,brier_std
+PRISM_discovery_to_validation,logistic,0.789218,0.045212,0.898557,0.021246,0.228093,0.015801
+PRISM_discovery_to_validation,random_forest,0.824313,0.018543,0.913687,0.008952,0.179297,0.013272
+PRISM_validation_to_discovery,logistic,0.880797,0.008052,0.962983,0.004097,0.116687,0.007926
+PRISM_validation_to_discovery,random_forest,0.887895,0.006374,0.968476,0.001939,0.117974,0.00086

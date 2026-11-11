@@ -1,0 +1,17 @@
+{
+  "legacy_root": "${IBD_LEGACY_ROOT}",
+  "cohorts": {
+    "HMP2": {
+      "microbiome": "manual_abundance.csv",
+      "metabolome": "metabolites.csv",
+      "metadata": "clean_metadata.csv"
+    },
+    "PRISM": {
+      "microbiome": "prism_abundance_clean.csv",
+      "metabolome": "prism_metabolites_clean.csv",
+      "metadata": "prism_metadata_clean.csv"
+    }
+  },
+  "status": "legacy_unharmonized"
+}
+

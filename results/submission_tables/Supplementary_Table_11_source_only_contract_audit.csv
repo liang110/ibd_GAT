@@ -1,0 +1,10 @@
+variant,fixed_universe_species,source_fitted_feature_cap,source_fitted_prevalence_threshold,n_direction_model_rows,max_abs_delta_AUROC_vs_primary,target_labels_used_for_variant,interpretation
+declared_contract_source_presence_HMP2,126,126,presence audit,0,0.0,False,all 126 declared contract taxa were present after deterministic source projection; source-only presence filter leaves the declared contract unchanged
+declared_contract_source_presence_PRISM,126,126,presence audit,0,0.0,False,all 126 declared contract taxa were present after deterministic source projection; source-only presence filter leaves the declared contract unchanged
+declared_contract_source_presence_NielsenHB_2014,126,126,presence audit,0,0.0,False,all 126 declared contract taxa were present after deterministic source projection; source-only presence filter leaves the declared contract unchanged
+cap100_prev0p10,126,100,0.1,42,0.0203846992153443,False,source-only preprocessing/feature-cap sensitivity within the fixed transductive universe
+cap126_prev0p05,126,126,0.05,42,0.0810974280732346,False,source-only preprocessing/feature-cap sensitivity within the fixed transductive universe
+cap126_prev0p10,126,126,0.1,42,0.0193003487358326,False,source-only preprocessing/feature-cap sensitivity within the fixed transductive universe
+cap126_prev0p20,126,126,0.2,42,0.071740137314734,False,source-only preprocessing/feature-cap sensitivity within the fixed transductive universe
+cap50_prev0p10,126,50,0.1,42,0.0945918700959023,False,source-only preprocessing/feature-cap sensitivity within the fixed transductive universe
+strict_source_only_feature_universe,not applicable,not estimable,not estimable,0,not estimable,not applicable,not re-estimated because the frozen local package excludes the raw HMP2/PRISM matrices needed to reconstruct source-specific taxon universes; no strict source-only deployment claim is made

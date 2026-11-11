@@ -1,0 +1,46 @@
+experiment_id: standard_model_family_v1
+status: preregistered_before_rerun
+task:
+  endpoint: binary_ibd_vs_control
+  modality: microbiome_species_only
+  shared_feature_contract: fixed_hmp2_prism_126_species_projected_to_nielsen
+  contract_definition: label_free_hmp2_prism_taxonomic_intersection_before_nielsen_evaluation
+  nielsen_role_in_contract_definition: none_projection_only
+  forbidden_inputs:
+    - clinical_covariates
+    - participant_identifiers
+    - outcome_derived_features
+    - target_cohort_labels
+    - target_cohort_distribution_statistics
+preprocessing:
+  closure: per_sample_in_fixed_shared_space
+  transform: clr
+  prevalence_filter: training_fold_only_minimum_0.10
+  feature_selection: training_fold_only_mutual_information_top_100
+model_selection:
+  outer_source_splits: 10
+  source_validation_fraction: 0.20
+  inner_folds: 3
+  score: roc_auc
+  refit_after_selection: all_source_samples_only
+comparators:
+  - prevalence_baseline
+  - logistic_l2
+  - elastic_net
+  - linear_svm
+  - random_forest
+  - xgboost
+  - shallow_mlp
+evaluation:
+  directions:
+    - HMP2_to_PRISM
+    - PRISM_to_HMP2
+    - HMP2_to_NielsenHB_2014
+    - PRISM_to_NielsenHB_2014
+  primary_metrics: [roc_auc, average_precision, brier]
+  external_uncertainty: participant_cluster_bootstrap
+  target_role: locked_external_evaluation_only
+exclusions:
+  - target_adaptive_harmonization
+  - ComBat_or_MMUPHin_main_ranking
+  - graph_or_domain_generalization_main_ranking

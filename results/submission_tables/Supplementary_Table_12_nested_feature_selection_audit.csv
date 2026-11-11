@@ -1,0 +1,6 @@
+stage,operation,allowed_fit_information,excluded_information,nested_audit_pass,implementation_trace
+1,Outer source split,source participant IDs and source labels,target cohort,True,repeated_group_train_validation or repeated_stratified_train_validation
+2,Inner fold preprocessing,inner-training rows only,inner-validation rows and target,True,CLRFeaturePipeline.fit inside select_standard_models
+3,Inner fold scoring,frozen inner-training transform and candidate model,inner-validation labels only for scoring,True,candidate AUROC used only for source-side selection
+4,Final source refit,all eligible source rows with selected parameters,target rows and labels,True,fit_final_source_models
+5,Locked target prediction,frozen source pipeline and model,target abundance for transform/predict; target labels after prediction,True,external scoring and cluster bootstrap

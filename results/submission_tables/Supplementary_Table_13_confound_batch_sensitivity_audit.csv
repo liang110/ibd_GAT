@@ -1,0 +1,6 @@
+cohort,n_samples,n_participants,n_repeated_samples,origins,metadata_availability,batch_or_confound_adjustment_in_primary,interpretation
+HMP2,388,105,382,"{""HMP2"": 388}",age_years=0/388; sex=0/388; treatment_observed=0/388; origin=388/388; site=388/388; timepoint=388/388,False,provenance/metadata boundary; residual confounding remains possible
+PRISM,220,220,0,"{""discovery"": 155, ""validation"": 65}",age_years=0/220; sex=0/220; treatment_observed=0/220; origin=220/220; site=220/220 (unknown placeholder); timepoint=220/220,False,provenance/metadata boundary; residual confounding remains possible
+NielsenHB_2014,396,318,156,"{""DNK"": 177, ""ESP"": 219}",age_years=384/396; sex=396/396; treatment_observed=0/396; country/origin=396/396; site=396/396 (unknown placeholder); timepoint=396/396; calprotectin/HBI/SCCAI=0/396,False,provenance/metadata boundary; residual confounding remains possible
+synthetic_batch_only_control,10 seeds,not applicable,not applicable,simulated batch perturbation,known truth,False,mean target AUROC 0.495; SD 0.050; control remained near chance
+PRISM_origin_audit,220,220,0,discovery=155; validation=65,origin retained; other clinical batch covariates unavailable,False,origin-aware directional asymmetry is reported descriptively

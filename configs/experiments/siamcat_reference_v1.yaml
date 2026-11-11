@@ -1,0 +1,31 @@
+experiment_id: siamcat_reference_v1
+status: preregistered_before_execution
+purpose: native_siamcat_source_only_reference
+task:
+  endpoint: binary_ibd_vs_control
+  modality: microbiome_species_only
+  shared_feature_contract: fixed_hmp2_prism_126_species
+  target_labels_available_to_training: false
+preprocessing:
+  owner: SIAMCAT_2.14.0
+  filter: source_only_abundance_cutoff_1e-06
+  normalization: source_only_log_std
+training:
+  model: SIAMCAT_lasso
+  source_resampling_seeds: 10
+  ensemble: stratified_5_fold_source_models_per_seed
+  seed_base: 20260816
+evaluation:
+  directions:
+    - HMP2_to_PRISM
+    - PRISM_to_HMP2
+    - HMP2_to_NielsenHB_2014
+    - PRISM_to_NielsenHB_2014
+  metrics: [roc_auc, average_precision, brier]
+  uncertainty: 500_participant_cluster_bootstrap
+comparability:
+  statement: >-
+    This native SIAMCAT workflow is a separately labelled field-standard
+    reference. It is not merged into the Python CLR model ranking because its
+    source-fitted abundance filtering and log.std normalization are owned by
+    SIAMCAT.

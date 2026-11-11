@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+title: "An auditable framework for directional transferability of relational and tabular microbiome representations in inflammatory bowel disease"
+message: "If you use this code or evidence package, cite the accompanying manuscript. Replace the placeholder DOI before public release."
+type: software
+authors:
+  - family-names: Xie
+    given-names: Liang
+  - family-names: Wang
+    given-names: Shenjie
+  - family-names: Wang
+    given-names: Xiaonan
+  - family-names: Wang
+    given-names: Xuwen
+  - family-names: Wang
+    given-names: Tianci
+  - family-names: Wang
+    given-names: Jiayin
+version: 0.1.0-date-2026-11-11
+license: OTHER
+repository-code: "https://github.com/REPLACE_WITH_FINAL_REPOSITORY/ibd_GAT"

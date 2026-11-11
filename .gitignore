@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+.venv/
+
+# Runtime data and model products are externally versioned.
+data/raw/
+data/interim/
+data/processed/
+artifacts/runs/
+artifacts/models/
+artifacts/cache/
+logs/
+
+# Keep legacy evidence tracked, but not compressed duplicates.
+*.pt
+*.pth
+*.ckpt
+*.joblib
+*.log
+
+# Editor and OS
+.DS_Store
+.vscode/
+.idea/

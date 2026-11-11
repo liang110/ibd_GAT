@@ -1,0 +1,27 @@
+cohort_id: NielsenHB_2014
+role: locked_external_target_candidate
+body_site: stool
+country: Denmark
+study_design: observational_cross_sectional_with_repeated_samples
+feature_type: MetaPhlAn_taxonomic_relative_abundance
+source:
+  provider: Bioconductor_ExperimentHub
+  package: curatedMetagenomicData
+  release: "2021-03-31"
+  relative_abundance:
+    url: https://mghp.osn.xsede.org/bir190004-bucket01/ExperimentHub/curatedMetagenomicData/2021-03-31/NielsenHB_2014/2021-03-31.NielsenHB_2014.relative_abundance.rda
+    expected_bytes: 276821
+    etag_md5: e7c571b0020cc56263222560d91dcadf
+    sha256: 19f6b0308cd9248740e22db2178a6608ff0498c774f272a77068212581269b0e
+  sample_metadata:
+    url: https://raw.githubusercontent.com/waldronlab/curatedMetagenomicData/devel/data/sampleMetadata.rda
+    expected_bytes: 624293
+    sha256: 168c8650d2893dcb49930b9b85a4187637775c9aae0a8023efb4cca52dc73444
+label_policy:
+  source_column: to_be_audited_from_curated_metadata
+  no_inference_from_sample_id_or_feature_data: true
+  retain_unusable_rows_for_audit: true
+integration_policy:
+  target_only_until_contract_locked: true
+  no_target_labels_or_feature_statistics_in_source_model_selection: true
+  required_shared_feature_space: HMP2_PRISM_label_free_contract_projection_only

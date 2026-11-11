@@ -1,0 +1,9 @@
+# Reproducibility requirements recorded for the release candidate.
+# Core package versions used in local validation:
+numpy==1.26.4
+pandas==2.2.0
+scikit-learn==1.5.1
+scipy==1.16.3
+PyYAML==6.0.1
+# Install torch/torch-geometric from a wheel compatible with the cluster CUDA/CPU runtime.
+# Local validation used torch 2.7.1+cu118 and torch-geometric 2.4.0.

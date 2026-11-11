@@ -1,0 +1,3 @@
+cohort,path,sha256,n_samples,n_features,invalid_cells,sum_min,sum_median,sum_max,percent_like_fraction
+HMP2,${IBD_LEGACY_ROOT}/manual_abundance.csv,b98f4bea67c16a9d08a934e3e9422cdbb9ac9de0d6469e55f6b02340ce3ba4fd,1638,578,0,0.0,100.0,100.00007999999998,True
+PRISM,${IBD_LEGACY_ROOT}/prism_abundance_clean.csv,79dca7ae79ab1d7f1a15eed55efd2fd111b7cd995cab240bc1a00a208c5c0069,220,209,0,0.1429684,0.9898541,0.9997957,False

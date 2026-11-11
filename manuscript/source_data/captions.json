@@ -1,0 +1,9 @@
+{
+  "Figure1": "Source-only, confound-audited framework for directional transfer. The harmonized HMP2/IBDMDB and PRISM microbiome matrices are reduced to a frozen 126-feature contract before split-local source fitting; selected features enter tabular and No-Prior graph-attention branches, with targets locked until prediction.",
+  "Figure2": "Input scale, feature harmonization and the 126-feature cross-cohort contract. Ranges show min\u2013max library sums with median markers; all values are from Gate0.",
+  "Figure3": "Participant overlap and known-truth controls. Each point is a seed or scenario replicate; violin medians and heatmap values summarize the audit package.",
+  "Figure4": "PRISM origin-held-out transfer. Error bars show across-split standard deviation; paired intervals are plotted separately for each source split and are not pooled intervals.",
+  "Figure5": "Directional cross-cohort transfer. Points are ten source repeats; horizontal segments show mean \u00b1 s.d.; paired differences are shown per split.",
+  "Figure6": "Topology ablations and edge-set diagnostics. (a) Split-level AUROC values across no-edge, identity, rewired, Pearson and Spearman topologies in both transfer directions. (b) Mean AUROC by topology and direction. (c) Edge-set Jaccard overlap relative to the Spearman reference for Pearson and rewired graphs. (d) Fixed top-k construction assigns eight outgoing edges to every retained node; a conventional degree correlation is undefined under this construction and the audit placeholder is not interpreted as ecological conservation.",
+  "Figure7": "Capacity-matched no-message comparator. Paired transfer performance of the approximate no-message-passing multilayer perceptron and No-Prior Spearman GAT using the same source-only transformed input contract and similar hidden capacity."
+}
