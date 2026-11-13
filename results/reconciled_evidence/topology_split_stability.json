@@ -1,0 +1,28 @@
+{
+  "HMP2_to_PRISM": {
+    "n_splits": 10,
+    "mean_split_equal": 0.09803898083623695,
+    "median_split_equal": 0.11796058362369347,
+    "min_split": -0.4699259581881533,
+    "max_split": 0.5817182055749129,
+    "positive_splits": 5,
+    "positive_fraction": 0.5,
+    "leave_one_split_out_min": 0.04429684475416186,
+    "leave_one_split_out_max": 0.16114619628339144,
+    "rewired_records_per_split": 5,
+    "estimand": "split-equal mean of real AUROC minus within-split mean of five rewired AUROCs"
+  },
+  "PRISM_to_HMP2": {
+    "n_splits": 10,
+    "mean_split_equal": 0.09754821055016574,
+    "median_split_equal": 0.08410131003002116,
+    "min_split": -0.05963556671933867,
+    "max_split": 0.2409416121553285,
+    "positive_splits": 9,
+    "positive_fraction": 0.9,
+    "leave_one_split_out_min": 0.08161561037181432,
+    "leave_one_split_out_max": 0.11501307469122178,
+    "rewired_records_per_split": 5,
+    "estimand": "split-equal mean of real AUROC minus within-split mean of five rewired AUROCs"
+  }
+}

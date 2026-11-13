@@ -1,0 +1,18 @@
+{
+  "analysis": "PRISM discovery-only source composition sensitivity",
+  "source_origin": "discovery",
+  "target_origin": "HMP2",
+  "n_source": 155,
+  "n_target": 1626,
+  "n_source_participants": 155,
+  "n_target_participants": 130,
+  "n_features": 126,
+  "n_splits": 10,
+  "epochs": 40,
+  "models": [
+    "graph_attention",
+    "elastic_net",
+    "random_forest"
+  ],
+  "source_only_preprocessing": true
+}

@@ -1,0 +1,11 @@
+panel,scenario,n_seeds,mean_target_auroc,sd_target_auroc,mean_recovery,mean_false_positive_candidates,truth_denominator,acceptance_rate,acceptance_rule
+End-to-end truth panel,batch_only,10,0.4953566449081067,0.0499707597526994,,1.6,,1.0,0.35 <= AUROC <= 0.65
+End-to-end truth panel,null_control,10,0.5123366602343984,0.0351159941190224,,1.8,,1.0,0.35 <= AUROC <= 0.65
+End-to-end truth panel,signal_only,10,0.7379736360686133,0.076325088290853,5.1,,6,0.8,AUROC >= 0.70 and recovery >= 3/6
+End-to-end truth panel,signal_reversing_batch,10,0.7365150742523574,0.062743344098911,5.2,,6,0.7,AUROC >= 0.70 and recovery >= 3/6
+End-to-end truth panel,signal_topology_shift,10,0.7530961854217386,0.0336561126989959,5.2,,6,1.0,AUROC >= 0.70 and recovery >= 3/6
+Selector audit,batch_only,10,0.4595901214277795,0.0682677421948724,,3.3,,1.0,0.35 <= AUROC <= 0.65
+Selector audit,null_control,10,0.4975863352180315,0.0465626406589503,,2.6,,1.0,0.35 <= AUROC <= 0.65
+Selector audit,signal_only,10,1.0,0.0,6.0,,6,1.0,AUROC >= 0.70 and recovery >= 3/6
+Selector audit,signal_reversing_batch,10,1.0,0.0,6.0,,6,1.0,AUROC >= 0.70 and recovery >= 3/6
+Selector audit,signal_topology_shift,10,1.0,0.0,6.0,,6,1.0,AUROC >= 0.70 and recovery >= 3/6
