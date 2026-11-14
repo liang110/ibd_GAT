@@ -1,11 +1,11 @@
-panel,scenario,n_seeds,mean_target_auroc,sd_target_auroc,mean_recovery,mean_false_positive_candidates,truth_denominator,acceptance_rate,acceptance_rule
-End-to-end truth panel,batch_only,10,0.4953566449081067,0.0499707597526994,,1.6,,1.0,0.35 <= AUROC <= 0.65
-End-to-end truth panel,null_control,10,0.5123366602343984,0.0351159941190224,,1.8,,1.0,0.35 <= AUROC <= 0.65
-End-to-end truth panel,signal_only,10,0.7379736360686133,0.076325088290853,5.1,,6,0.8,AUROC >= 0.70 and recovery >= 3/6
-End-to-end truth panel,signal_reversing_batch,10,0.7365150742523574,0.062743344098911,5.2,,6,0.7,AUROC >= 0.70 and recovery >= 3/6
-End-to-end truth panel,signal_topology_shift,10,0.7530961854217386,0.0336561126989959,5.2,,6,1.0,AUROC >= 0.70 and recovery >= 3/6
-Selector audit,batch_only,10,0.4595901214277795,0.0682677421948724,,3.3,,1.0,0.35 <= AUROC <= 0.65
-Selector audit,null_control,10,0.4975863352180315,0.0465626406589503,,2.6,,1.0,0.35 <= AUROC <= 0.65
-Selector audit,signal_only,10,1.0,0.0,6.0,,6,1.0,AUROC >= 0.70 and recovery >= 3/6
-Selector audit,signal_reversing_batch,10,1.0,0.0,6.0,,6,1.0,AUROC >= 0.70 and recovery >= 3/6
-Selector audit,signal_topology_shift,10,1.0,0.0,6.0,,6,1.0,AUROC >= 0.70 and recovery >= 3/6
+experiment,scenario,disease_truth_defined,n_seeds,mean_target_auroc,sd_target_auroc,mean_recovery,mean_false_positive_candidates,acceptance_rate
+end_to_end_truth_panel,batch_only,False,10,0.49535664490810677,0.049970759752699476,,1.6,1.0
+end_to_end_truth_panel,null_control,False,10,0.5123366602343984,0.03511599411902245,,1.8,1.0
+end_to_end_truth_panel,signal_only,True,10,0.7379736360686133,0.07632508829085308,5.1,,0.8
+end_to_end_truth_panel,signal_reversing_batch,True,10,0.7365150742523574,0.06274334409891107,5.2,,0.7
+end_to_end_truth_panel,signal_topology_shift,True,10,0.7530961854217386,0.03365611269899597,5.2,,1.0
+selector_audit,batch_only,False,10,0.4595901214277795,0.06826774219487244,,3.3,1.0
+selector_audit,null_control,False,10,0.4975863352180315,0.04656264065895038,,2.6,1.0
+selector_audit,signal_only,True,10,1.0,0.0,6.0,,1.0
+selector_audit,signal_reversing_batch,True,10,1.0,0.0,6.0,,1.0
+selector_audit,signal_topology_shift,True,10,1.0,0.0,6.0,,1.0

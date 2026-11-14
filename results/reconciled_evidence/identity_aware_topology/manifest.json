@@ -1,0 +1,21 @@
+{
+  "protocol": "identity_embedding_topology_control",
+  "contract_schema": "ibd_gat_canonical_contract_v2",
+  "contract_hash": "a18364d4aad01a1fc7e69971d04b9d7157789d9f688f03e7e23c0d20c017d91b",
+  "n_splits": 10,
+  "k": 8,
+  "n_rewired_seeds": 5,
+  "epochs": 40,
+  "embedding_dim": 8,
+  "conditions": [
+    "real_spearman",
+    "rewired",
+    "identity"
+  ],
+  "same_source_splits": true,
+  "same_optimizer": true,
+  "same_loss": true,
+  "same_training_budget": true,
+  "target_labels_used_for_refitting_or_selection": false,
+  "source_matrices": "reconciled contract proportion matrices"
+}

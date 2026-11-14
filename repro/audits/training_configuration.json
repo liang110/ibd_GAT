@@ -1,0 +1,79 @@
+{
+  "contract": "126 shared microbiome features; source-only closure/CLR/MI fitting",
+  "graph": {
+    "topology": "source-training Spearman top-k",
+    "k": 8,
+    "rewired": "directed degree-preserving; no self-loops; duplicate edges rejected by construction/validation",
+    "identity": "explicit self-loops only"
+  },
+  "training": {
+    "primary_no_prior_gat": {
+      "loss": "binary_cross_entropy_with_logits",
+      "class_weight": "none",
+      "optimizer": "Adam",
+      "learning_rate": 0.001,
+      "weight_decay": 0.001,
+      "epochs": 40,
+      "train_batch_size": 32,
+      "prediction_batch_size": 64,
+      "shuffle": true
+    },
+    "identity_aware_topology_sensitivity": {
+      "loss": "binary_cross_entropy_with_logits",
+      "class_weight": "none",
+      "optimizer": "Adam",
+      "learning_rate": 0.001,
+      "weight_decay": 0.001,
+      "epochs": 40,
+      "train_batch_size": "full_source_panel",
+      "prediction_batch_size": 128,
+      "shuffle": false,
+      "embedding_dim": 8
+    },
+    "randomness": {
+      "torch_numpy": "seeds set per source split",
+      "model_seed_formula": "base_seed + direction_index*100000 + split",
+      "rewire_seed_formula": "model_seed + 1000 + rewired_seed",
+      "torch_threads": 4
+    },
+    "tabular_references": "declared class_weight and random_state settings are in the corresponding benchmark scripts",
+    "gate_b_topology_intervention": {
+      "loss": "binary_cross_entropy_with_logits",
+      "class_weight": "none",
+      "pos_weight": "none",
+      "optimizer": "Adam",
+      "learning_rate": 0.001,
+      "weight_decay": 0.001,
+      "epochs": 40,
+      "train_batch_size": "full_source_panel",
+      "prediction_batch_size": 128,
+      "shuffle": false,
+      "torch_threads": 4,
+      "model_seed_formula": "base_seed + direction_index*100000 + split",
+      "rewire_seed_formula": "model_seed + 1000 + rewired_seed"
+    },
+    "bootstrap_units": {
+      "gate_b": "participant-cluster target draws shared across splits and conditions",
+      "primary_draws": 5000,
+      "direct_prism_stratum_transfer_draws": 1000
+    }
+  },
+  "uncertainty": {
+    "source_splits": 10,
+    "target_resampling": "participant-cluster bootstrap",
+    "primary_draws": 5000,
+    "direct_stratum_transfer_draws": 1000
+  },
+  "selection": {
+    "target_labels_used_for_refitting_or_selection": false,
+    "historical_preregistration_claim": false
+  },
+  "qa": {
+    "required": [
+      "edge self-loop count = 0",
+      "identity Jaccard = 0",
+      "edge hash reconstruction passes",
+      "truth acceptance recomputes exactly"
+    ]
+  }
+}

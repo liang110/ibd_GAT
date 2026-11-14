@@ -1,0 +1,182 @@
+[
+  {
+    "direction": "HMP2_to_PRISM",
+    "split": 1,
+    "n_nodes": 75,
+    "n_train": 1337,
+    "selected_features": 75,
+    "embedding_dim": 8,
+    "model_seed": 20261111
+  },
+  {
+    "direction": "HMP2_to_PRISM",
+    "split": 2,
+    "n_nodes": 74,
+    "n_train": 1291,
+    "selected_features": 74,
+    "embedding_dim": 8,
+    "model_seed": 20261112
+  },
+  {
+    "direction": "HMP2_to_PRISM",
+    "split": 3,
+    "n_nodes": 77,
+    "n_train": 1323,
+    "selected_features": 77,
+    "embedding_dim": 8,
+    "model_seed": 20261113
+  },
+  {
+    "direction": "HMP2_to_PRISM",
+    "split": 4,
+    "n_nodes": 76,
+    "n_train": 1298,
+    "selected_features": 76,
+    "embedding_dim": 8,
+    "model_seed": 20261114
+  },
+  {
+    "direction": "HMP2_to_PRISM",
+    "split": 5,
+    "n_nodes": 76,
+    "n_train": 1300,
+    "selected_features": 76,
+    "embedding_dim": 8,
+    "model_seed": 20261115
+  },
+  {
+    "direction": "HMP2_to_PRISM",
+    "split": 6,
+    "n_nodes": 75,
+    "n_train": 1275,
+    "selected_features": 75,
+    "embedding_dim": 8,
+    "model_seed": 20261116
+  },
+  {
+    "direction": "HMP2_to_PRISM",
+    "split": 7,
+    "n_nodes": 75,
+    "n_train": 1277,
+    "selected_features": 75,
+    "embedding_dim": 8,
+    "model_seed": 20261117
+  },
+  {
+    "direction": "HMP2_to_PRISM",
+    "split": 8,
+    "n_nodes": 75,
+    "n_train": 1321,
+    "selected_features": 75,
+    "embedding_dim": 8,
+    "model_seed": 20261118
+  },
+  {
+    "direction": "HMP2_to_PRISM",
+    "split": 9,
+    "n_nodes": 77,
+    "n_train": 1248,
+    "selected_features": 77,
+    "embedding_dim": 8,
+    "model_seed": 20261119
+  },
+  {
+    "direction": "HMP2_to_PRISM",
+    "split": 10,
+    "n_nodes": 78,
+    "n_train": 1306,
+    "selected_features": 78,
+    "embedding_dim": 8,
+    "model_seed": 20261120
+  },
+  {
+    "direction": "PRISM_to_HMP2",
+    "split": 1,
+    "n_nodes": 97,
+    "n_train": 176,
+    "selected_features": 97,
+    "embedding_dim": 8,
+    "model_seed": 20361111
+  },
+  {
+    "direction": "PRISM_to_HMP2",
+    "split": 2,
+    "n_nodes": 100,
+    "n_train": 176,
+    "selected_features": 100,
+    "embedding_dim": 8,
+    "model_seed": 20361112
+  },
+  {
+    "direction": "PRISM_to_HMP2",
+    "split": 3,
+    "n_nodes": 100,
+    "n_train": 176,
+    "selected_features": 100,
+    "embedding_dim": 8,
+    "model_seed": 20361113
+  },
+  {
+    "direction": "PRISM_to_HMP2",
+    "split": 4,
+    "n_nodes": 100,
+    "n_train": 176,
+    "selected_features": 100,
+    "embedding_dim": 8,
+    "model_seed": 20361114
+  },
+  {
+    "direction": "PRISM_to_HMP2",
+    "split": 5,
+    "n_nodes": 100,
+    "n_train": 176,
+    "selected_features": 100,
+    "embedding_dim": 8,
+    "model_seed": 20361115
+  },
+  {
+    "direction": "PRISM_to_HMP2",
+    "split": 6,
+    "n_nodes": 100,
+    "n_train": 176,
+    "selected_features": 100,
+    "embedding_dim": 8,
+    "model_seed": 20361116
+  },
+  {
+    "direction": "PRISM_to_HMP2",
+    "split": 7,
+    "n_nodes": 100,
+    "n_train": 176,
+    "selected_features": 100,
+    "embedding_dim": 8,
+    "model_seed": 20361117
+  },
+  {
+    "direction": "PRISM_to_HMP2",
+    "split": 8,
+    "n_nodes": 100,
+    "n_train": 176,
+    "selected_features": 100,
+    "embedding_dim": 8,
+    "model_seed": 20361118
+  },
+  {
+    "direction": "PRISM_to_HMP2",
+    "split": 9,
+    "n_nodes": 100,
+    "n_train": 176,
+    "selected_features": 100,
+    "embedding_dim": 8,
+    "model_seed": 20361119
+  },
+  {
+    "direction": "PRISM_to_HMP2",
+    "split": 10,
+    "n_nodes": 100,
+    "n_train": 176,
+    "selected_features": 100,
+    "embedding_dim": 8,
+    "model_seed": 20361120
+  }
+]

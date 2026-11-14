@@ -76,7 +76,7 @@ def predict_gat(model: NoPriorGAT, x: np.ndarray, edge_index: torch.Tensor) -> n
         return torch.cat([torch.sigmoid(model(batch.x, batch.edge_index, batch.batch)).cpu() for batch in loader]).numpy()
 
 
-def metric_row(direction: str, split: int, model: str, probability: np.ndarray, y: np.ndarray, n_train: int, n_features: int, edge_index: torch.Tensor) -> dict:
+def metric_row(direction: str, split: int, model: str, probability: np.ndarray, y: np.ndarray, n_train: int, n_target_participants: int, n_features: int, edge_index: torch.Tensor) -> dict:
     return {
         "direction": direction,
         "source_origin": "discovery",
@@ -88,7 +88,7 @@ def metric_row(direction: str, split: int, model: str, probability: np.ndarray, 
         "brier": float(brier_score_loss(y, probability)),
         "n_train": int(n_train),
         "n_target": int(len(y)),
-        "n_target_participants": int(len(y)),
+        "n_target_participants": int(n_target_participants),
         "n_features": int(n_features),
         "edge_count": int(edge_index.shape[1]),
         "edge_hash": hashlib.sha256(edge_index.numpy().tobytes()).hexdigest(),
@@ -123,10 +123,11 @@ def main() -> None:
     prism = prism.loc[prism_manifest.index, features]
     if not hmp.index.is_unique or not prism.index.is_unique:
         raise ValueError("Sample identifiers must be unique after contract alignment")
-    if not set(prism_manifest.participant_id).issubset(set(prism_manifest.index)):
-        # PRISM uses one operational participant per record; this check documents
-        # the intended weighting unit without relying on a site field.
-        raise ValueError("Unexpected PRISM participant mapping")
+    # The discovery stratum is cross-sectional in the reconciled contract, so
+    # each source participant contributes one observation.  The target HMP2
+    # panel may contain repeated visits and is intentionally left unchanged.
+    if prism_manifest.participant_id.duplicated().any():
+        raise ValueError("Discovery source must have one observation per participant")
 
     rows: list[dict] = []
     predictions: list[dict] = []
@@ -145,7 +146,7 @@ def main() -> None:
             "random_forest": RandomForestClassifier(n_estimators=300, min_samples_leaf=2, class_weight="balanced", random_state=args.seed + split, n_jobs=1).fit(x_train, y_train).predict_proba(x_target)[:, 1],
         }
         for name, prob in models.items():
-            rows.append(metric_row("PRISM_discovery_to_HMP2", split, name, prob, y_target, len(train_idx), x_train.shape[1], edge_index))
+            rows.append(metric_row("PRISM_discovery_to_HMP2", split, name, prob, y_target, len(train_idx), hmp_manifest.participant_id.nunique(), x_train.shape[1], edge_index))
             predictions.extend({"direction": "PRISM_discovery_to_HMP2", "split": split, "model": name, "sample_id": sid, "participant_id": pid, "outcome": int(y), "probability": float(p)} for sid, pid, y, p in zip(hmp_manifest.sample_id, hmp_manifest.participant_id, y_target, prob))
     metrics = pd.DataFrame(rows)
     metrics.to_csv(args.output_dir / "metrics.csv", index=False)

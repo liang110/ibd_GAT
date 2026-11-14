@@ -1,0 +1,27 @@
+{
+  "schema_version": "truth_acceptance_rules_v1",
+  "ledger": "results/reconciled_evidence/truth_acceptance/per_seed_acceptance.csv",
+  "end_to_end_truth_panel": {
+    "seeds_per_scenario": 10,
+    "positive_rule": {
+      "logic": "AND",
+      "auroc_min_inclusive": 0.7,
+      "recovered_features_min_inclusive": 3,
+      "truth_denominator": 6
+    },
+    "negative_rule": {
+      "logic": "inclusive_interval",
+      "auroc_min_inclusive": 0.35,
+      "auroc_max_inclusive": 0.65,
+      "truth_denominator": "not_applicable"
+    },
+    "observed_acceptance": {
+      "signal_only": "8/10",
+      "signal_reversing_batch": "7/10",
+      "signal_topology_shift": "10/10",
+      "batch_only": "10/10",
+      "null_control": "10/10"
+    }
+  },
+  "selector_audit_is_separate_from_end_to_end_panel": true
+}
