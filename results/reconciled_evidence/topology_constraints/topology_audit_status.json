@@ -1,30 +1,31 @@
 {
-  "schema_version": "topology_audit_status_v1",
+  "schema_version": "topology_audit_status_v2",
   "formal_gateb": {
     "metric_rows": 140,
-    "raw_edge_list_exports_present": false,
-    "self_loop_count_recorded_in_metrics": false,
-    "unique_edge_count_recorded_in_metrics": false,
+    "raw_edge_list_exports_present": true,
+    "self_loop_count_recorded_in_audit": true,
+    "unique_edge_count_recorded_in_audit": true,
     "degree_hash_matches_real_within_split": true,
     "edge_count_matches_real_within_split": true,
     "rewired_edge_hash_distinct_from_real": true,
     "hash_reconstruction_records": 140,
-    "hash_mismatch_records": 24,
-    "mismatch_groups": [
-      "HMP2_to_PRISM split 9",
-      "PRISM_to_HMP2 split 6",
-      "PRISM_to_HMP2 split 7",
-      "PRISM_to_HMP2 split 8"
-    ],
-    "runtime_nonself_and_duplicate_validation_present": true,
-    "publication_claim_allowed": false
+    "hash_mismatch_records": 0,
+    "checkpoint_selected_feature_hash_matches": true,
+    "publication_claim_allowed": true
   },
-  "historical_compact_edge_audit": {
-    "records": 60,
-    "self_loop_count_all_zero": true,
-    "identity_jaccard_all_zero": true,
-    "formal_gateb_rewired_edge_lists_present": false,
-    "old_shuffled_exports_have_duplicate_edges": true
+  "exact_export": {
+    "edge_files": 140,
+    "real_rows": 20,
+    "identity_rows": 20,
+    "rewired_rows": 100,
+    "nonidentity_self_loop_max": 0,
+    "nonidentity_duplicate_delta_max": 0,
+    "identity_explicit_self_loops": true,
+    "all_official_edge_hashes_match": true
   },
-  "required_action": "Export exact formal Gate B edge lists with unique_edge_count and self_loop_count, then reconcile the 24 hash mismatches before claiming complete edge-level auditability."
+  "historical_local_reconstruction": {
+    "mismatch_records": 24,
+    "explanation": "local environment/cached MI selection differed from formal checkpoint selected feature IDs"
+  },
+  "conclusion": "Formal Gate B edge-level constraints and official hashes are fully audited from the persisted split checkpoints."
 }

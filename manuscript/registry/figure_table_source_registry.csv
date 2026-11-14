@@ -1,12 +1,12 @@
 figure_id,source_artifact,claim,status
-Figure1,src/ibd_microbiome_framework + workflows/slurm + manuscript_rebuild/manifests/frozen_evidence_register_v1.md,source-only audited workflow,complete
-Figure2,artifacts/hpc_results/gate0_20261110_000415 + manuscript_rebuild/figures/Figure2_input_contract.png,input scale and feature contract,complete
-Figure3,artifacts/hpc_results/repeated_leakage_20261110_001007 + artifacts/hpc_results/synthetic_supplement,known-truth and leakage controls,complete
-Figure4,artifacts/hpc_results/origin_supplement + artifacts/hpc_results/closure_final/origin_paired_20261110_131203,PRISM origin asymmetry and paired uncertainty,complete
-Figure5,artifacts/hpc_results/final_supplement/no_prior_gat_spearman_20261110_082627 + artifacts/hpc_results/final_supplement/paired_bootstrap_20261110_082627,directional transfer and paired uncertainty,complete
-Figure6,artifacts/hpc_results/no_prior_gat_fixed + artifacts/hpc_results/closure_final/topology_edges_20261110_131203,topology ablations and edge diagnostics,complete
-Figure7,artifacts/hpc_results/capacity_control,capacity control,complete
-Table1,artifacts/hpc_results/gate0_20261110_000415,cohort and input contract,complete
-Table2,artifacts/hpc_results/synthetic_supplement,control experiments,complete
-Table3,artifacts/hpc_results/final_supplement,model transfer comparison,complete
-Table4,artifacts/hpc_results/no_prior_gat_fixed + artifacts/hpc_results/capacity_control,topology and capacity control,complete
+Figure1,src/ibd_microbiome_framework; workflows/slurm,source-only audited directional transfer framework,complete
+Figure2,manuscript/source_data/Figure2_input_scale_audit.csv,input scale and frozen feature contract,complete
+Figure3,manuscript/source_data/Figure3_repeated_leakage.csv; manuscript/source_data/Figure3_synthetic_controls.csv,participant leakage and known-truth stress tests,complete
+Figure4,manuscript/source_data/Figure4_origin_metrics.csv; manuscript/source_data/Figure4_origin_bootstrap.csv,PRISM origin asymmetry and paired uncertainty,complete
+Figure5,manuscript/source_data/Figure5_transfer_metrics.csv; manuscript/source_data/Figure5_transfer_bootstrap.csv,ten-split bidirectional transfer and paired comparisons,complete
+Figure6,manuscript/source_data/Figure6_topology_metrics.csv; results/reconciled_evidence/topology_split_stability.csv; results/reconciled_evidence/topology_constraints/formal_edge_constraint_audit.csv,topology ablations and edge-level constraints,complete
+Figure7,manuscript/source_data/Figure7_capacity_metrics.csv,capacity-matched comparator,complete
+Table1,results/submission_tables/Table_1_cohort_contract.csv,cohort and input contract,complete
+Table2,results/submission_tables/Table_2_primary_benchmark_metrics.csv,primary benchmark metrics,complete
+Table3,results/submission_tables/Table_3_siamcat_reference_metrics.csv,external reference comparison,complete
+Table4,results/submission_tables/Supplementary_Table_10_paired_model_differences.csv; results/submission_tables/Supplementary_Table_11_source_only_contract_audit.csv; results/submission_tables/Supplementary_Table_12_nested_feature_selection_audit.csv; results/submission_tables/Supplementary_Table_13_confound_batch_sensitivity_audit.csv,topology capacity and robustness audits,complete

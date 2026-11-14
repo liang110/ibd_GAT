@@ -1,0 +1,27 @@
+{
+  "protocol": "gateb_formal_edge_export_audit_v1",
+  "source": "original Gate B split checkpoints exported with the original run environment",
+  "original_run_reused": true,
+  "contract_schema": "ibd_gat_canonical_contract_v2",
+  "contract_hash": "a18364d4aad01a1fc7e69971d04b9d7157789d9f688f03e7e23c0d20c017d91b",
+  "records": 140,
+  "edge_hash_matches_official": 140,
+  "edge_hash_mismatches_official": 0,
+  "selected_feature_hash_matches_checkpoint": 140,
+  "constraints": {
+    "nonidentity_self_loop_count_max": 0,
+    "nonidentity_duplicate_edge_delta_max": 0,
+    "nonidentity_out_degree_min": 8,
+    "nonidentity_out_degree_max": 8,
+    "identity_explicit_self_loops": true
+  },
+  "environment": {
+    "python": "3.9.23",
+    "torch": "2.6.0+cu118",
+    "pandas": "2.3.1",
+    "numpy": "2.0.2",
+    "scikit_learn": "1.6.1"
+  },
+  "mismatch_resolution": "The 24 local mismatches were resolved by exporting from the persisted formal split checkpoints in the original run environment. The previous local reconstruction used current cached preprocessing/MI selection and is retained only as a diagnostic comparison.",
+  "status": "PASS_formal_edge_level_audit"
+}

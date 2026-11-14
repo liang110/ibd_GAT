@@ -2,9 +2,9 @@ object,primary_sources,status,limitation
 
 Table 3,absolute_performance_summary.csv; paired_bootstrap_reconciled_by_split.csv,metrics_rebuildable,raw predictions excluded
 
-Figure 6,topology_split_stability.csv; topology_constraints/edge_constraint_audit.csv,metrics_rebuildable,formal rewired edge-level audit blocked
+Figure 6,topology_split_stability.csv; topology_constraints/formal_edge_constraint_audit.csv,metrics_and_edge_audit_rebuildable,"formal Gate B edge list, constraints and official hashes verified 140/140"
 
-Supplementary Figure S3,identity_aware_topology/metrics.csv; identity_aware_topology/summary.csv; identity_aware_topology/paired_split_contrasts.csv,metrics_rebuildable,24 hash mismatches require reconciliation
+Supplementary Figure S3,identity_aware_topology/metrics.csv; identity_aware_topology/summary.csv; identity_aware_topology/paired_split_contrasts.csv,metrics_rebuildable,formal edge hash reconciliation passed; raw predictions excluded
 
 Supplementary Figure S4,prism_discovery_origin_sensitivity/metrics.csv; prism_discovery_origin_sensitivity/summary.csv,metrics_rebuildable,descriptive provenance-stratum stress test
 
