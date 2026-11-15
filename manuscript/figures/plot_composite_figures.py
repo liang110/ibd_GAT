@@ -1,8 +1,8 @@
 """Composite figures for the reconstructed manuscript.
 
 The panels are deliberately mixed-modality so that each figure communicates an
-evidence chain rather than a single bar chart. All data are read from the
-archived HPC result tables.
+evidence chain rather than a single bar chart. The helper consumes optional external run tables; the tracked release
+figures and compact source tables remain the default reproducibility path.
 """
 from pathlib import Path
 import numpy as np
@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 
 ROOT = Path(__file__).resolve().parents[2]
-HPC = ROOT / "artifacts" / "hpc_results"
+EXTERNAL_RESULTS = ROOT / "artifacts" / "external_runs"
 OUT = ROOT / "manuscript_rebuild" / "figures"
 OUT.mkdir(parents=True, exist_ok=True)
 
@@ -46,7 +46,7 @@ def save(fig, stem):
 
 
 def figure2():
-    scale = pd.read_csv(HPC / "gate0_20261110_000415" / "input_scale_audit.csv")
+    scale = pd.read_csv(EXTERNAL_RESULTS / "gate0_20261110_000415" / "input_scale_audit.csv")
     fig, axes = plt.subplots(2, 2, figsize=(8.7, 6.1), gridspec_kw={"height_ratios":[1,1.08]})
     fig.suptitle("Input contract fixes the cross-cohort comparison before model fitting", fontsize=10.2, fontweight="bold", y=0.99)
     # a: scale range as interval + point, with log x axis.
@@ -101,13 +101,13 @@ def figure2():
 
 
 def figure3():
-    leak = pd.read_csv(HPC / "repeated_leakage_20261110_001007" / "repeated_leakage_metrics.csv")
-    syn = pd.read_csv(HPC / "synthetic_supplement" / "synthetic_controls_v2_20261110_091610" / "synthetic_control_metrics.csv")
+    leak = pd.read_csv(EXTERNAL_RESULTS / "repeated_leakage_20261110_001007" / "repeated_leakage_metrics.csv")
+    syn = pd.read_csv(EXTERNAL_RESULTS / "synthetic_supplement" / "synthetic_controls_v2_20261110_091610" / "synthetic_control_metrics.csv")
     syn["scenario"] = syn["scenario"].fillna("null").replace({
         "signal_reversing_batch": "reversing_batch",
         "signal_topology_shift": "topology_shift",
     })
-    stable = pd.read_csv(HPC / "synthetic_supplement" / "stable_synthetic_v2_20261110_091610" / "domain_stable_sweep_metrics.csv")
+    stable = pd.read_csv(EXTERNAL_RESULTS / "synthetic_supplement" / "stable_synthetic_v2_20261110_091610" / "domain_stable_sweep_metrics.csv")
     fig, axes = plt.subplots(2,2,figsize=(8.8,6.6))
     fig.suptitle("Participant structure and known-truth controls expose the dominant failure modes", fontsize=10.2, fontweight="bold", y=0.99)
     # a paired leakage AUROC
@@ -148,8 +148,8 @@ def figure3():
 
 
 def figure5():
-    metrics = pd.read_csv(HPC / "final_supplement" / "no_prior_gat_spearman_20261110_082627" / "no_prior_gat_metrics.csv")
-    boot = pd.read_csv(HPC / "final_supplement" / "paired_bootstrap_20261110_082627" / "paired_bootstrap_summary.csv")
+    metrics = pd.read_csv(EXTERNAL_RESULTS / "final_supplement" / "no_prior_gat_spearman_20261110_082627" / "no_prior_gat_metrics.csv")
+    boot = pd.read_csv(EXTERNAL_RESULTS / "final_supplement" / "paired_bootstrap_20261110_082627" / "paired_bootstrap_summary.csv")
     models = {"no_prior_gat":"No-Prior Spearman GAT","elastic_net":"Elastic net","random_forest":"Random forest"}
     metrics["model_label"] = metrics.model.map(models)
     dirs=["HMP2_to_PRISM","PRISM_to_HMP2"]; dirlab={dirs[0]:"HMP2 → PRISM", dirs[1]:"PRISM → HMP2"}

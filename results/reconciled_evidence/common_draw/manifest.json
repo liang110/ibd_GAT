@@ -1,0 +1,31 @@
+{
+  "analysis": "primary common-target participant bootstrap",
+  "directions": [
+    "HMP2_to_PRISM",
+    "PRISM_to_HMP2"
+  ],
+  "target_strata_by_direction": {
+    "HMP2_to_PRISM": [
+      "pooled",
+      "discovery",
+      "validation"
+    ],
+    "PRISM_to_HMP2": [
+      "pooled"
+    ]
+  },
+  "analysis_levels": [
+    "visit",
+    "participant"
+  ],
+  "n_source_splits": 10,
+  "n_bootstrap": 5000,
+  "target_draw_shared_across_source_splits": true,
+  "target_draw_shared_across_models": true,
+  "models_refit": false,
+  "target_labels_used_for_refitting_or_selection": false,
+  "point_estimand": "arithmetic mean of unbootstrapped split-level metrics",
+  "interval_estimand": "percentile of draw-level mean across source splits",
+  "scoring_unit": "visit or participant, as recorded in the summary table",
+  "bootstrap_unit": "participant cluster"
+}

@@ -1,47 +1,45 @@
 # Supplementary Information
 
+## Supplementary index
+
+Supplementary Table 1 records the frozen input and feature contract; Table 2 records repeated-participant and known-truth controls; Table 3 records PRISM origin transfer; Table 4 records within-cohort and configuration sensitivity; Table 5 records contract-aligned topology stability; Table 6 records the capacity comparator and paired bootstrap manifest. Supplementary Figure 1 records selector operating characteristics under the separately versioned `v2_prevalent_truth_features` benchmark. Machine-readable source CSV files, immutable manifests and the figure/table source registry are stored beside the manuscript source.
+
 ## Supplementary Methods
 
-The supplementary package is a provenance layer for the main manuscript. Each artifact is linked to one frozen run identifier, one source-target direction and one feature-contract hash. The package does not introduce a second estimand. It records the input contract, participant manifests, known-truth controls, origin-held-out predictions, topology exports, capacity control and source-split paired bootstrap outputs used in the main text.
+The supplementary package is a provenance layer for the main manuscript. Each artifact is linked to one experiment identifier, one source-target direction, one source split and one frozen feature-contract definition. The package does not introduce a second primary estimand.
 
-### Input and contract records
+The input-contract manifest records the HMP2 and PRISM feature registries, canonical crosswalk, 126-feature order, denylist, sample and participant manifests, zero-mass decisions and the exact-name metabolite intersection. Twelve HMP2 samples were excluded because their total mass in the shared feature space was zero; no PRISM sample was excluded. A separate manifest audit found zero exact, normalized and substring overlap for sample or participant identifiers between HMP2 and PRISM in both the manifest and included panels.
 
-Gate0 records the HMP2 and PRISM input SHA-256 hashes, canonical feature crosswalk, 126-feature order, denylist, sample and participant manifests, zero-mass decisions and the exact-name metabolite intersection. Three HMP2 samples were excluded because their total mass in the shared feature space was zero; no PRISM sample was excluded. Clinical, outcome and identifier fields were rejected before any model branch was fitted.
+The repeated-leakage package contains ten seeds for sample-level and participant-grouped splitting, overlap counts and grouped-split assertions. The current contract uses 80 synthetic participants, three observations per participant, 240 observations in total, and 180/60 train/test observations per policy; grouped splitting uses 60/20 train/test participants. The planted clinical-field package contains age, faecal-calprotectin, medication and label-proxy cases; the validator rejected all 10/10 cases. The known-truth benchmark is versioned as `v2_prevalent_truth_features`; null and batch-only controls remained near chance, while signal, reversing-batch and topology-shift scenarios recovered planted features under their declared acceptance gates.
 
-### Leakage and known-truth controls
+The PRISM origin package keeps discovery and validation labels separate and stores predictions for each source split. The final topology package stores Pearson, Spearman and destination-shuffled edge exports for ten repeats in each direction, together with edge counts and Jaccard summaries. Fixed k=8 produces zero out-degree variance, so degree correlation is NA under the prespecified policy. Exported Spearman edge records match the transfer metrics for all 60 rows checked.
 
-The repeated-leakage package contains ten seeds for naive sample splitting and participant-grouped splitting, overlap counts and grouped-split assertions. The planted clinical-leakage package contains age, faecal-calprotectin, medication and label-proxy cases; the validator rejected all planted cases. Synthetic null, batch-only, signal-only, reversing-batch and topology-shift scenarios are known-truth stress tests. Their purpose is to test pipeline behaviour under controlled perturbation, not to validate IBD biology.
+For each source split, participant-cluster bootstrap resamples target participants and applies the same target indices to all models in a paired comparison. Baseline GAT-versus-elastic-net/random-forest comparisons use B=5,000 with zero invalid draws; the capacity-matched GAT-versus-MLP comparison also uses B=5,000 with zero invalid draws. Ten-split summaries average split-specific point estimates and interval endpoints; they are not pooled intervals.
 
-### Origin, topology and capacity packages
+## Supplementary table descriptions
 
-The PRISM origin package keeps discovery and validation labels separate and stores common target predictions for each source repeat. The topology package stores Pearson, Spearman, rewired, identity and no-edge exports for the five-repeat ablation. The capacity package stores the approximate no-message-passing comparator using the same source-only transformed input boundary. The out-degree diagnostic is reported as a construction condition: fixed k=8 gives zero variance in the out-degree vector, so conventional degree correlation is undefined; the artifact value 1.0 is not ecological evidence.
+**Supplementary Table 1. Frozen input and evidence contract.** Manifest and included sample counts, participant counts, shared feature count, zero-mass exclusions, exact-name metabolite intersection and independence-audit status.
 
-### Paired uncertainty
+**Supplementary Table 2. Repeated-participant and known-truth controls.** Naive and grouped AUROC, participant overlap, planted-field rejection, five synthetic scenarios, recovery counts, acceptance rates and denominators.
 
-For each source split, bootstrap resampling was performed at the participant level and predictions were held fixed. Split-specific AUROC, average precision, Brier and paired differences are stored as source CSV files. The main manuscript reports arithmetic means of split-specific point estimates and interval endpoints where a ten-split summary is required. The supplementary tables retain the split-level records so that a future reanalysis can recompute pooled or hierarchical intervals without changing the primary estimand.
+**Supplementary Table 3. PRISM origin-held-out transfer.** Ten-split No-Prior/elastic-net/random-forest metrics and the separate tabular origin audit.
 
-## Supplementary Tables
+**Supplementary Table 4. Within-cohort and configuration sensitivity.** Full-Model, No-Prior, tabular and capacity-control records, with the legacy whole-cohort prior excluded from the primary transfer estimand.
 
-**Supplementary Table 1. Frozen input and evidence contract.** Raw sample and feature dimensions, shared feature count, zero-mass exclusions, exact-name metabolite intersection, hashes and denylist status.
+**Supplementary Table 5. Contract-aligned topology stability.** Ten-split edge counts, Jaccard summaries and the fixed-k degree diagnostic.
 
-**Supplementary Table 2. Repeated-participant and known-truth controls.** Naive and grouped AUROC, participant overlap, planted leakage rejection and synthetic scenario summaries.
+**Supplementary Table 6. Capacity control and paired uncertainty.** Model IDs, split IDs, source and target counts, parameter budget, point metrics and B=5,000 paired bootstrap intervals.
 
-**Supplementary Table 3. PRISM origin-held-out transfer.** Discovery-to-validation and validation-to-discovery model metrics, source-repeat variability and participant-cluster paired differences.
+## Supplementary Figure 1
 
-**Supplementary Table 4. Within-cohort and configuration sensitivity.** Full-Model, No-Prior and No-Context records, with the legacy whole-cohort prior explicitly excluded from the primary claim.
-
-**Supplementary Table 5. Topology edge-set diagnostics.** Pearson–Spearman and Spearman–rewired Jaccard overlap, topology hashes and fixed-k degree diagnostic.
-
-**Supplementary Table 6. Capacity control and source-split manifests.** Capacity-matched no-message results, model configuration, optimizer settings, split identifiers and output hashes.
-
-## Supplementary Figure
-
-**Supplementary Figure 1. Participant-leakage and known-truth control panels.** The figure reproduces the audited leakage, overlap, synthetic stress-test and domain-stability panels. It defines the selector’s operating boundary and is not a biological validation figure.
+**Supplementary Figure 1. Selector operating characteristics.** The figure uses the separately versioned local selector audit `v2_prevalent_truth_features` with ten seeds. It reports disease-feature recall, batch false-positive rate and the expected disease true-positive count under a random selector with the same budget. These operating characteristics are diagnostic controls for the selector and are not biological validation or a second transfer estimand.
 
 ## Reproducibility checklist
 
-The release package will contain the environment lockfile, Python and PyTorch versions, license, acquisition instructions for third-party public inputs, Git revision, Slurm scripts, input/output SHA-256 tables, feature-contract manifest, split manifests, model configurations, checkpoints where redistribution is permitted, figure source registry and table source registry. The GitHub repository and archival DOI will be inserted when the repository is created.
+The public release package contains the environment specification, production code, compact source tables, split manifests, model configurations, audit summaries, figure source registry and table source registry. Full prediction ledgers, participant identifiers, checkpoints and restricted raw data are not redistributed.
 
 ## Reference linkage
 
-All scientific references used by the supplementary text are numbered in the main manuscript reference list. No supplementary result introduces an uncited external claim or a second set of performance values.
+Supplementary scientific statements use the numbered reference list in the main manuscript. No supplementary result introduces a second set of transfer performance values.
+
+

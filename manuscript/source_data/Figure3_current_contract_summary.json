@@ -1,0 +1,9 @@
+{
+  "n_seeds": 10,
+  "acceptance_pass_rate": 1.0,
+  "clinical_leakage_rejection_rate": 1.0,
+  "random_split_subject_overlap_mean": 43.0,
+  "group_split_subject_overlap_max": 0,
+  "random_split_roc_auc_mean": 0.96,
+  "group_split_roc_auc_mean": 0.5521819846819847
+}

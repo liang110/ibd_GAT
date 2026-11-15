@@ -4,7 +4,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 from matplotlib.patches import FancyBboxPatch,FancyArrowPatch
-ROOT=Path(__file__).resolve().parents[2]; HPC=ROOT/'artifacts'/'hpc_results'; OUT=ROOT/'manuscript_rebuild'/'figures'
+ROOT=Path(__file__).resolve().parents[2]; DATA=ROOT/'manuscript'/'source_data'; OUT=ROOT/'manuscript'/'figures'
 mpl.rcParams.update({'font.family':'DejaVu Sans','font.size':7.2,'axes.titlesize':8.2,'axes.labelsize':7.1,'axes.spines.top':False,'axes.spines.right':False,'axes.linewidth':.7,'svg.fonttype':'none','pdf.fonttype':42,'xtick.labelsize':6.5,'ytick.labelsize':6.5})
 INK='#1F2933';MUTED='#5B6770';GRID='#D9E0E5';NAVY='#28577D';TEAL='#3FA7A3';ORANGE='#D77A32';PURPLE='#7A5A9E';RED='#B84C4C';
 
@@ -17,11 +17,7 @@ def save(fig):
  plt.close(fig)
 
 def read_metrics():
- rows=[]
- for label,globname in [('No-edge','no_prior_gat_no_edge_*'),('Identity','no_prior_gat_identity_*'),('Rewired','no_prior_gat_shuffled_*'),('Pearson','no_prior_gat_pearson_*'),('Spearman','no_prior_gat_spearman_*')]:
-  p=list((HPC/'no_prior_gat_fixed').glob(f'{globname}/no_prior_gat_metrics.csv'))[0]
-  q=pd.read_csv(p); q['topology_label']=label; rows.append(q)
- return pd.concat(rows,ignore_index=True)
+ return pd.read_csv(DATA / 'Figure6_topology_metrics.csv')
 
 def main():
  d=read_metrics(); order=['No-edge','Identity','Rewired','Pearson','Spearman']; dirs=['HMP2_to_PRISM','PRISM_to_HMP2'];
@@ -50,6 +46,6 @@ def main():
  ax.add_patch(FancyBboxPatch((.10,.65),.80,.20,boxstyle='round,pad=.02,rounding_size=.03',fc='#F0EBF7',ec=PURPLE,lw=1.2,transform=ax.transAxes)); ax.text(.50,.75,'Each node retains exactly k = 8 outgoing edges',transform=ax.transAxes,ha='center',va='center',fontsize=8,color=INK)
  ax.add_patch(FancyArrowPatch((.50,.62),(.50,.46),transform=ax.transAxes,arrowstyle='-|>',mutation_scale=10,color=MUTED,lw=1.2));
  ax.add_patch(FancyBboxPatch((.10,.25),.80,.20,boxstyle='round,pad=.02,rounding_size=.03',fc='#E7F0F7',ec=NAVY,lw=1.2,transform=ax.transAxes)); ax.text(.50,.35,'conventional degree correlation: undefined',transform=ax.transAxes,ha='center',va='center',fontsize=8,color=INK,fontweight='bold')
- ax.text(.50,.13,'The audit value 1.0 is retained only as a construction-level placeholder; it does not establish conserved ecological topology.',transform=ax.transAxes,ha='center',va='center',fontsize=6.8,color=MUTED,wrap=True)
+ ax.text(.50,.13,'Fixed-k construction makes conventional out-degree correlation undefined; no ecological conservation claim is made.',transform=ax.transAxes,ha='center',va='center',fontsize=6.8,color=MUTED,wrap=True)
  fig.tight_layout(rect=[.02,.02,.99,.95]); save(fig)
 main()

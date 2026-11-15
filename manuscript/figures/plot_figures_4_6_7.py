@@ -6,7 +6,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 
-ROOT=Path(__file__).resolve().parents[2]; HPC=ROOT/"artifacts"/"hpc_results"; OUT=ROOT/"manuscript_rebuild"/"figures"; OUT.mkdir(parents=True,exist_ok=True)
+ROOT=Path(__file__).resolve().parents[2]; EXTERNAL_RESULTS=ROOT/"artifacts"/"external_runs"; OUT=ROOT/"manuscript"/"figures"; OUT.mkdir(parents=True,exist_ok=True)
 mpl.rcParams.update({"font.family":"sans-serif","font.sans-serif":["Arial","Helvetica","DejaVu Sans"],"svg.fonttype":"none","pdf.fonttype":42,"font.size":7.3,"axes.titlesize":8.2,"axes.labelsize":7.1,"xtick.labelsize":6.5,"ytick.labelsize":6.5,"axes.linewidth":0.7})
 INK="#1F2933"; MUTED="#5B6770"; GRID="#D9E0E5"; NAVY="#28577D"; TEAL="#3FA7A3"; ORANGE="#D77A32"; PURPLE="#7A5A9E"; RED="#B84C4C"; GOLD="#C99724"
 
@@ -19,9 +19,9 @@ def save(fig,stem):
     plt.close(fig)
 
 def figure4():
-    ext=pd.read_csv(HPC/"origin_supplement"/"prism_origin_20261110_092718"/"prism_origin_metrics.csv")
-    gat=pd.read_csv(HPC/"closure_final"/"origin_paired_20261110_131203"/"origin_paired_metrics.csv")
-    boot=pd.read_csv(HPC/"closure_final"/"origin_paired_20261110_131203"/"origin_paired_bootstrap.csv")
+    ext=pd.read_csv(EXTERNAL_RESULTS/"origin_supplement"/"prism_origin_20261110_092718"/"prism_origin_metrics.csv")
+    gat=pd.read_csv(EXTERNAL_RESULTS/"closure_final"/"origin_paired_20261110_131203"/"origin_paired_metrics.csv")
+    boot=pd.read_csv(EXTERNAL_RESULTS/"closure_final"/"origin_paired_20261110_131203"/"origin_paired_bootstrap.csv")
     # External tabular data: aggregate source validation vs external target.
     ext2=ext.groupby(["direction","model","evaluation"],as_index=False).roc_auc.agg(["mean","std"]).reset_index()
     fig,axes=plt.subplots(2,2,figsize=(8.8,6.5),gridspec_kw={"width_ratios":[1.12,1]})
@@ -79,7 +79,7 @@ def figure6():
     return
     paths={}
     for d in ["identity","no_edge","pearson","shuffled","spearman"]:
-        p=list((HPC/"no_prior_gat_fixed").glob(f"no_prior_gat_{d}_*/no_prior_gat_summary.csv")); paths[d]=p[0] if p else None
+        p=list((EXTERNAL_RESULTS/"no_prior_gat_fixed").glob(f"no_prior_gat_{d}_*/no_prior_gat_summary.csv")); paths[d]=p[0] if p else None
     rows=[]
     for t,p in paths.items():
         if p:
@@ -87,8 +87,8 @@ def figure6():
             # normalize repeated metric columns
             for _,r in df.iterrows(): rows.append({"topology":t,"direction":r.iloc[0],"auc_mean":float(r.iloc[3]),"auc_sd":float(r.iloc[4])})
     topo=pd.DataFrame(rows)
-    cap=pd.read_csv(HPC/"capacity_control"/"capacity_20261110_103951"/"capacity_control_metrics.csv")
-    gat=pd.read_csv(HPC/"final_supplement"/"no_prior_gat_spearman_20261110_082627"/"no_prior_gat_metrics.csv")
+    cap=pd.read_csv(EXTERNAL_RESULTS/"capacity_control"/"capacity_20261110_103951"/"capacity_control_metrics.csv")
+    gat=pd.read_csv(EXTERNAL_RESULTS/"final_supplement"/"no_prior_gat_spearman_20261110_082627"/"no_prior_gat_metrics.csv")
     fig,axes=plt.subplots(2,2,figsize=(8.8,6.4))
     fig.suptitle("Topology ablations localize the relational contribution",fontsize=10.2,fontweight="bold",y=.99)
     # a topology heatmap
@@ -121,8 +121,8 @@ def figure6():
     fig.tight_layout(rect=[.02,.02,.99,.95]); save(fig,"Figure6_topology_controls")
 
 def figure7():
-    cap=pd.read_csv(HPC/"capacity_control"/"capacity_20261110_103951"/"capacity_control_metrics.csv")
-    gat=pd.read_csv(HPC/"final_supplement"/"no_prior_gat_spearman_20261110_082627"/"no_prior_gat_metrics.csv")
+    cap=pd.read_csv(EXTERNAL_RESULTS/"capacity_control"/"capacity_20261110_103951"/"capacity_control_metrics.csv")
+    gat=pd.read_csv(EXTERNAL_RESULTS/"final_supplement"/"no_prior_gat_spearman_20261110_082627"/"no_prior_gat_metrics.csv")
     fig,axes=plt.subplots(2,2,figsize=(8.5,6.1)); fig.suptitle("Capacity-matched control separates graph message passing from generic nonlinear capacity",fontsize=10.0,fontweight="bold",y=.99)
     dirs=["HMP2_to_PRISM","PRISM_to_HMP2"]; labdir={dirs[0]:"HMP2 → PRISM",dirs[1]:"PRISM → HMP2"}
     # a paired split scatter

@@ -1,18 +1,25 @@
-# Frozen evidence register v1 (2026-11-10)
+# Frozen evidence register
 
-Status labels: `complete` = result retrieved and locally archived; `pending` = required before submission.
+"
+        "This compact register records the evidence blocks used by the manuscript.
+"
+        "Large inputs and machine-specific run products remain external.
 
-| Evidence block | Source artifact | Status | Primary use |
-|---|---|---|---|
-| Gate0 input contract | `artifacts/hpc_results/gate0_20261110_000415` | complete | Results 2.1 |
-| Shared microbiome contract | 126 canonical features | complete | Methods/Results |
-| Shared metabolite intersection | exact intersection = 0 | complete | Scope boundary |
-| Participant leakage controls | `artifacts/hpc_results/repeated_leakage_20261110_001007` | complete | Results 2.2 |
-| PRISM origin transfer | `artifacts/hpc_results/origin_supplement` | complete | Results 2.3 |
-| Synthetic controls | `artifacts/hpc_results/synthetic_supplement` | complete | Results 2.2 |
-| GAT topology ablations | `artifacts/hpc_results/no_prior_gat_fixed` | complete | Results 2.6 |
-| Paired HMP2/PRISM bootstrap | `artifacts/hpc_results/final_supplement` | complete | Results 2.5 |
-| Capacity control | `artifacts/hpc_results/capacity_control` | complete | Results 2.6 |
-| 10-split origin GAT | `artifacts/hpc_results/closure/origin_gat_20261110_102936` | complete | Results 2.3 |
-| Origin-GAT paired bootstrap | `artifacts/hpc_results/closure_final/origin_paired_20261110_131203` | complete | Results/Supplementary origin uncertainty |
-| Edge Jaccard/degree correlation | `artifacts/hpc_results/closure_final/topology_edges_20261110_131203` | complete | Results/Supplementary topology audit |
+"
+        "| Evidence block | Compact source | Status |
+"
+        "|---|---|---|
+"
+        "| 126-feature input contract | `manuscript/source_data/Figure2_input_scale_audit.csv` | complete |
+"
+        "| Figure 3 leakage and known-truth controls | `manuscript/source_data/Figure3_repeated_leakage.csv` | complete |
+"
+        "| HMP2/PRISM independence | `manuscript/source_data/HMP2_PRISM_independence_audit.csv` | complete |
+"
+        "| Primary common-draw bootstrap | `results/reconciled_evidence/common_draw/` | complete |
+"
+        "| Direct PRISM stratum transfer | `results/reconciled_evidence/prism_discovery_validation_transfer/` | complete |
+"
+        "| Topology and edge constraints | `results/reconciled_evidence/topology_constraints/` | complete |
+"
+        "| Truth-acceptance ledger | `results/reconciled_evidence/truth_acceptance/` | complete |

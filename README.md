@@ -1,8 +1,8 @@
-# IBD microbiome transfer framework
+# IBD microbiome transfer protocol
 
 Compact code and evidence sources for **A bidirectional cross-cohort benchmark of graph-attention and tabular models for microbiome-based classification of inflammatory bowel disease**.
 
-The release implements a frozen feature contract, source-only preprocessing, participant-aware uncertainty, bidirectional external transfer and same-architecture topology controls. It evaluates a protocol under declared data and graph conditions; it does not claim universal graph-model superiority or clinical utility.
+The release implements a frozen microbiome feature contract, source-only preprocessing, participant-aware uncertainty, bidirectional transfer and controlled topology comparisons. Its contribution is an auditable evaluation protocol under declared data and graph conditions.
 
 ## Repository layout
 
@@ -10,48 +10,39 @@ The release implements a frozen feature contract, source-only preprocessing, par
 - `scripts/` and `workflows/` — analysis entry points and scheduler templates.
 - `manuscript/source_data/` and `manuscript/registry/` — compact figure/table source tables.
 - `results/submission_tables/` — manuscript table sources.
-- `results/reconciled_evidence/` — compact audit tables for the main claims.
-- `repro/audits/` — fail-closed validators for evidence, truth acceptance and formal topology constraints.
+- `repro/audits/` — fail-closed validators for evidence, truth acceptance and topology constraints.
 - `tests/` — lightweight contract and synthetic-control tests.
 
-Raw cohort matrices, clinical identifiers, full prediction ledgers, checkpoints and scheduler logs are intentionally excluded. Public inputs should be obtained from their original repositories under their access terms.
+Raw cohort matrices, clinical identifiers, full prediction ledgers, checkpoints and scheduler logs are excluded. Public inputs are acquired from their original repositories under their access terms.
 
 ## Minimal setup
 
 ```bash
 python -m venv .venv
-# Linux/macOS: source .venv/bin/activate
-# Windows PowerShell: .venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
 python -m pip install -e ".[dev]"
 PYTHONPATH=src python -m pytest -q
 ```
 
-The graph branch requires a compatible PyTorch/PyTorch-Geometric installation; these wheels are environment-specific and are not pinned in the lightweight package.
+The graph branch requires a compatible PyTorch/PyTorch-Geometric installation; cluster-specific wheels are not pinned in the lightweight package.
 
-## Evidence validation
-
-From the repository root:
+## Focused evidence checks
 
 ```bash
 python repro/validate_package.py
-python repro/audits/validate_truth_acceptance.py --ledger results/reconciled_evidence/truth_acceptance/per_seed_acceptance.csv
 python repro/audits/validate_evidence_registry.py --root .
-python repro/audits/validate_topology_constraints.py \
-  --edge-audit results/reconciled_evidence/topology_constraints/formal_edge_constraint_audit.csv \
-  --hash-audit results/reconciled_evidence/topology_constraints/formal_gateb_hash_audit.csv \
-  --status results/reconciled_evidence/topology_constraints/topology_audit_status.json
-python repro/audits/validate_reconstructed_edge_lists.py \
-  --archive releases/formal_topology_edge_export_20261114.zip
+python repro/audits/validate_evidence_content_20261116.py --root .
+python scripts/audit_cohort_independence_20261116.py \
+  --source-root path/to/canonical_contract/data_contract \
+  --output-dir artifacts/accession_audit
 ```
 
-The formal topology export contains 140 edge lists (20 real, 20 identity and 100 degree-preserving rewired graphs) in `releases/formal_topology_edge_export_20261114.zip`. All official edge hashes and selected-feature hashes match; non-identity graphs have no self-loops or duplicate edges, and the former 24 local reconstruction mismatches are documented in `results/reconciled_evidence/topology_constraints/mismatch_resolution.csv`.
+The current Figure 3 source table records 80 synthetic participants, 240 observations, 43 mean participant overlaps under sample-level splitting, zero overlap under participant-grouped splitting, and current-contract mean AUROC values of 0.960 and 0.552182. The HMP2/PRISM audit records zero exact, normalized and substring overlap for sample and participant identifiers in both manifest and included panels. The direct PRISM discovery-to-validation transfer evidence is stored separately under `results/reconciled_evidence/prism_discovery_validation_transfer/`; its recruitment-source confounding remains explicit. The local HMP2 manifest contains no raw accession column, so accession-to-sample mapping remains a provider-level metadata boundary.
 
-## Release scope
+## Reproducibility tiers
 
-The repository keeps only machine-readable files that directly support a manuscript table, figure, truth-panel acceptance rule or topology audit. Raw matrices, participant-level predictions and transient run products remain outside the public review release. The formal edge lists are retained because they are direct evidence for the topology claim rather than intermediate training output.
+1. **Local validation:** package tests and synthetic known-truth controls.
+2. **Evidence audit:** compact source tables, manifests and figure/table registries.
+3. **Full rerun:** optional after acquiring the public cohort inputs and matching the declared environment.
 
-## Citation
-
-Please cite the accompanying manuscript and the references in `manuscript/clean/References.md`.
-
+The repository retains only files that directly support manuscript tables, figures and audit claims. It does not redistribute raw cohort data or transient scheduler outputs.

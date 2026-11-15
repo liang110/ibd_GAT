@@ -1,0 +1,5 @@
+scope,id_type,hmp2_count,prism_count,exact_overlap,normalized_overlap
+manifest,sample_id,1638,220,0,0
+manifest,participant_id,130,220,0,0
+included_shared_space,sample_id,1626,220,0,0
+included_shared_space,participant_id,130,220,0,0

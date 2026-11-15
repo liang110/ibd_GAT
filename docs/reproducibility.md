@@ -1,6 +1,6 @@
 # Reproducibility runbook
 
-This document is the short operational companion to the root README. It separates the checks that can run without raw cohort data from the full HPC rerun.
+This document is the short operational companion to the root README. It separates the checks that can run without raw cohort data from the optional external-compute rerun.
 
 ## 1. Local code and synthetic checks
 
@@ -13,9 +13,9 @@ PYTHONPATH=src python scripts/run_synthetic_control_suite.py --help
 
 These checks validate explicit label contracts, participant-aware splits, source-only compositional preprocessing and the known-truth control machinery. They do not establish biological validity.
 
-## 2. Gate0 and contract
+## 2. Input contract
 
-Set `IBD_LEGACY_ROOT` to a local copy of the public input files. The expected filenames are documented in `configs/data_catalog.json` and the Gate0 launcher. Run the input audit before any model fitting. The contract output must include the feature registry, cohort manifests, shared feature candidates, library sums, input inventory and SHA-256 values.
+Set `IBD_LEGACY_ROOT` to a local copy of the public input files. The expected filenames are documented in `configs/data_catalog.json` and the input-contract launcher. Run the input audit before any model fitting. The contract output must include the feature registry, cohort manifests, shared feature candidates, library sums, input inventory and manifest provenance.
 
 ```bash
 export IBD_GAT_ROOT="$PWD"
@@ -23,7 +23,7 @@ export IBD_LEGACY_ROOT=/path/to/acquired/public-input-root
 export PYTHONPATH="$IBD_GAT_ROOT/src"
 python scripts/build_data_contract.py \
   --legacy-root "$IBD_LEGACY_ROOT" \
-  --output-dir artifacts/runs/gate0_contract
+  --output-dir artifacts/runs/input_contract
 ```
 
 ## 3. Primary transfer and audits
@@ -43,4 +43,4 @@ The companion jobs are:
 
 Every run should write a manifest containing the Git revision, input/output hashes, feature-contract hash, split identifiers, seeds, topology hash, model parameters and prediction paths. Figure and table source files must be generated from the frozen output tables. Do not edit figure numbers manually after a run.
 
-The public package includes compact source tables and figure registries. Large raw matrices, checkpoints, logs and transient Slurm outputs remain external.
+The public package includes compact source tables and figure registries. Large raw matrices, checkpoints, logs and transient scheduler outputs remain external.

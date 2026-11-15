@@ -12,3 +12,4 @@ Compact machine-readable sources for the manuscript claims. These files contain 
 - `../../releases/formal_topology_edge_export_20261114.zip`: the 140 canonical edge lists and the complete edge-level audit payload.
 
 Brier is lower-is-better. The figure/table registry identifies which source table supports each reported object.
+Unit convention: `paired_bootstrap_reconciled_by_split.csv` reports visit-scored contrasts with participant-cluster resampling.  The `common_draw` directory contains the formal shared-draw summary. Participant-level absolute metrics are stored separately in `absolute_performance_summary.csv`.
