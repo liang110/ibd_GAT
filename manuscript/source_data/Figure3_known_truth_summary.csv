@@ -1,0 +1,6 @@
+scenario,auc,rec,pass_rate
+null,0.5123366602343984,1.8,1.0
+batch_only,0.49535664490810677,1.6,1.0
+signal_only,0.7379736360686133,5.1,0.8
+reversing_batch,0.7365150742523574,5.2,0.7
+topology_shift,0.7530961854217386,5.2,1.0

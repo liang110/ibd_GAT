@@ -42,8 +42,12 @@
 40. Hanley, J. A. & McNeil, B. J. The meaning and use of the area under a receiver operating characteristic (ROC) curve. Radiology 143, 29–36 (1982). doi:10.1148/radiology.143.1.7063747.
 41. DeLong, E. R., DeLong, D. M. & Clarke-Pearson, D. L. Comparing the areas under two or more correlated receiver operating characteristic curves: a nonparametric approach. Biometrics 44, 837–845 (1988). doi:10.2307/2531595.
 42. Saito, T. & Rehmsmeier, M. The precision-recall plot is more informative than the ROC plot when evaluating binary classifiers on imbalanced datasets. PLoS ONE 10, e0118432 (2015). doi:10.1371/journal.pone.0118432.
-43. Collins, G. S. et al. Transparent Reporting of a multivariable prediction model for Individual Prognosis Or Diagnosis (TRIPOD): the TRIPOD statement. Annals of Internal Medicine 162, 55–63 (2015). doi:10.7326/M14-0697.
-44. von Elm, E. et al. The strengthening the reporting of observational studies in epidemiology (STROBE) statement: guidelines for reporting observational studies. PLoS Medicine 4, e296 (2007). doi:10.1371/journal.pmed.0040296.
-45. Wolff, R. F., Moons, K. G. M., Riley, R. D. et al. PROBAST: a tool to assess the risk of bias and applicability of prediction model studies. Annals of Internal Medicine 170, 51–58 (2019). doi:10.7326/M18-1376.
-46. Lundberg, S. M. & Lee, S.-I. A unified approach to interpreting model predictions. In Advances in Neural Information Processing Systems 30 (2017).
-47. Benjamini, Y. & Hochberg, Y. Controlling the false discovery rate: a practical and powerful approach to multiple testing. Journal of the Royal Statistical Society: Series B 57, 289–300 (1995). doi:10.1111/j.2517-6161.1995.tb02031.x.
+43. Yu, S., Li, J., Ye, Z. et al. Identification of a 10-species microbial signature of inflammatory bowel disease by machine learning and external validation. Cell Regeneration 14, 32 (2025). doi:10.1186/s13619-025-00246-w.
+44. Li, P., Xu, J., Liu, S. et al. Machine learning-based diagnosis of inflammatory bowel disease using gut microbiome virulence factor profiles: multicohort integration and independent validation. Journal of Translational Medicine (2026). doi:10.1186/s12967-026-09127-5.
+45. Collins, G. S. et al. Transparent Reporting of a multivariable prediction model for Individual Prognosis Or Diagnosis (TRIPOD): the TRIPOD statement. Annals of Internal Medicine 162, 55–63 (2015). doi:10.7326/M14-0697.
+46. von Elm, E. et al. The strengthening the reporting of observational studies in epidemiology (STROBE) statement: guidelines for reporting observational studies. PLoS Medicine 4, e296 (2007). doi:10.1371/journal.pmed.0040296.
+47. Wolff, R. F., Moons, K. G. M., Riley, R. D. et al. PROBAST: a tool to assess the risk of bias and applicability of prediction model studies. Annals of Internal Medicine 170, 51–58 (2019). doi:10.7326/M18-1376.
+
+48. Lundberg, S. M. & Lee, S.-I. A unified approach to interpreting model predictions. In Advances in Neural Information Processing Systems 30 (2017).
+
+49. Benjamini, Y. & Hochberg, Y. Controlling the false discovery rate: a practical and powerful approach to multiple testing. Journal of the Royal Statistical Society: Series B 57, 289–300 (1995). doi:10.1111/j.2517-6161.1995.tb02031.x.

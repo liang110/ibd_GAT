@@ -37,7 +37,7 @@ python scripts/audit_cohort_independence_20261116.py \
   --output-dir artifacts/accession_audit
 ```
 
-The current Figure 3 source table records 80 synthetic participants, 240 observations, 43 mean participant overlaps under sample-level splitting, zero overlap under participant-grouped splitting, and current-contract mean AUROC values of 0.960 and 0.552182. The HMP2/PRISM audit records zero exact, normalized and substring overlap for sample and participant identifiers in both manifest and included panels. The direct PRISM discovery-to-validation transfer evidence is stored separately under `results/reconciled_evidence/prism_discovery_validation_transfer/`; its recruitment-source confounding remains explicit. The local HMP2 manifest contains no raw accession column, so accession-to-sample mapping remains a provider-level metadata boundary.
+The current HMP2/PRISM contract records 1,638 HMP2 manifest observations, 1,626 included observations from 130 participants, and 220 PRISM observations from 220 operational participants. The current Figure 3 source table records 80 synthetic participants, 240 observations, 43 mean participant overlaps under sample-level splitting, zero overlap under participant-grouped splitting, and current-contract mean AUROC values of 0.960 and 0.552182. The HMP2/PRISM audit records zero exact, normalized and substring overlap for sample and participant identifiers in both manifest and included panels. The direct PRISM discovery-to-validation transfer evidence is stored separately under `results/reconciled_evidence/prism_discovery_validation_transfer/`; its recruitment-source confounding remains explicit. The local HMP2 manifest contains no raw accession column, so accession-to-sample mapping remains a provider-level metadata boundary.
 
 ## Reproducibility tiers
 
@@ -45,4 +45,7 @@ The current Figure 3 source table records 80 synthetic participants, 240 observa
 2. **Evidence audit:** compact source tables, manifests and figure/table registries.
 3. **Full rerun:** optional after acquiring the public cohort inputs and matching the declared environment.
 
-The repository retains only files that directly support manuscript tables, figures and audit claims. It does not redistribute raw cohort data or transient scheduler outputs.
+The formal Figure/Table source registry is the sole authoritative mapping for this manuscript; historical contracts remain outside the current registry. The repository retains only files that directly support manuscript tables, figures and audit claims. It does not redistribute raw cohort data or transient scheduler outputs.
+
+## Formal topology evidence
+The formal topology results are bound to the compact current-contract exports under `results/reconciled_evidence/topology_constraints/` and the runtime-boundary manifest `formal_topology_runtime_manifest.json`. The exported Real, Rewired and Identity objects are pre-convolution input configurations. The generic transfer launcher is retained as a reusable example and is not presented as the exact generator of every formal artifact.

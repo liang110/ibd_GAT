@@ -124,6 +124,37 @@ def check_figure3(root: Path) -> None:
         fail("Figure 3 acceptance record is not 10/10")
 
 
+def check_current_contract_registry(root: Path) -> None:
+    table = pd.read_csv(root / "results/submission_tables/Table_1_cohort_contract.csv")
+    if set(table["Cohort"]) != {"HMP2/IBDMDB", "PRISM"}:
+        fail("Table 1 contains a non-current cohort or is missing HMP2/PRISM")
+    hmp2 = table.loc[table["Cohort"].eq("HMP2/IBDMDB")].iloc[0]
+    prism = table.loc[table["Cohort"].eq("PRISM")].iloc[0]
+    included_column = "Included observations" if "Included observations" in table.columns else "Valid prediction samples"
+    if (int(hmp2[included_column]), int(hmp2["Participants"])) != (1626, 130):
+        fail("Table 1 HMP2 current-contract counts are incorrect")
+    if (int(prism[included_column]), int(prism["Participants"])) != (220, 220):
+        fail("Table 1 PRISM current-contract counts are incorrect")
+
+    registry_path = root / "manuscript/registry/figure_table_source_registry.csv"
+    registry = pd.read_csv(registry_path)
+    required_ids = {"Figure1", "Figure2", "Figure3", "Figure4", "Figure5", "Figure6", "Figure7", "Table1", "Table2", "Table3", "Table4", "Supplementary Figure S4"}
+    if not required_ids.issubset(set(registry["figure_id"])):
+        fail("public source registry is missing one or more current manuscript objects")
+    for row in registry.itertuples():
+        for raw in str(row.source_artifact).split(";"):
+            rel = raw.strip()
+            if rel and not (root / rel).exists():
+                fail(f"public source registry points to a missing artifact: {rel}")
+    by_id = {row.figure_id: str(row.source_artifact) for row in registry.itertuples()}
+    if "common_draw/gate_a_common_draw_summary.csv" not in by_id.get("Table3", ""):
+        fail("Table 3 registry does not point to the current common-draw summary")
+    if "prism_discovery_validation_transfer" not in by_id.get("Supplementary Figure S4", ""):
+        fail("Supplementary Figure S4 registry does not point to direct stratum transfer")
+    if "formal_topology_runtime_manifest.json" not in by_id.get("Figure6", ""):
+        fail("Figure 6 registry does not include formal topology provenance")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--root", type=Path, default=Path("."))
@@ -133,6 +164,7 @@ def main() -> int:
     check_direct_transfer(root)
     check_units(root)
     check_figure3(root)
+    check_current_contract_registry(root)
     print("PASS: registry, direct transfer, unit semantics, common draws and Figure 3 content checks")
     return 0
 

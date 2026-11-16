@@ -8,7 +8,7 @@
 
 **Figure 5. Bidirectional transfer under the frozen registry.** (a) ten source-repeat AUROC points; (b) paired ΔAUROC summaries; (c) model and direction means; (d) average precision.
 
-**Figure 6. Topology controls and edge diagnostics.** (a) five-repeat topology AUROC; (b) direction-by-topology means; (c) directed edge-set Jaccard; (d) fixed-k degree diagnostic, which is undefined because out-degree variance is zero.
+**Figure 6. Pre-convolution input-edge configuration sensitivity and edge diagnostics.** (a) ten source-split Real, Rewired and Identity AUROC conditions; (b) direction-by-configuration means; (c) taxon-ID-aligned directed edge-set Jaccard; (d) fixed-k degree diagnostic, which is undefined because out-degree variance is zero. The edge audit does not infer convolution-internal self-loop handling.
 
-**Figure 7. Approximate no-message comparator.** Split-level No-Prior Spearman GAT and no-message MLP scores under the same source-only transformed input. The displayed source-repeat contrast is not a participant-level paired confidence interval because capacity predictions were not archived at the participant level.
+**Figure 7. Approximate no-message comparator and probability error.** No-Prior Spearman GAT and no-message MLP use the same source-only transformed input boundary. Participant-level predictions support the paired target-participant bootstrap; Brier differences remain learner-specific and are not standalone calibration evidence.
 

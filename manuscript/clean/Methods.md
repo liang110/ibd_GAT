@@ -54,7 +54,7 @@ Association matrices were computed from source-training profiles. Each retained 
 E_{s,r} = \{(i,j): j \in Top_k(|R_{s,r,i,j}|; \text{stable taxon-ID ties}), j \ne i\}, \quad k=8.
 \]
 
-Pearson and Spearman association supplied topology sensitivity; the topology-stability export also included a destination-shuffled null. No-edge and identity graphs were retained as secondary controls in the source package but were not mixed with the final contract-aligned topology summary. Edge construction is a representation choice and is not interpreted as a biological interaction.
+Real Spearman and degree-preserving Rewired input configurations supplied the formal topology sensitivity; Identity was retained as an explicit self-loop input condition. No-edge and identity graphs were retained as secondary controls in the source package but were not mixed with the final contract-aligned topology summary. Edge construction is a representation choice and is not interpreted as a biological interaction.
 
 The capacity comparator was an approximate no-message-passing multilayer perceptron using the same T_{s,r}(X) input and a similar hidden-parameter budget. It was paired by source split and target participant set, and participant-level predictions were archived for the B=5,000 comparison.
 
@@ -102,6 +102,6 @@ The capacity contrast was:
 
 ## Reproducibility and reporting
 
-The public package provides the production preprocessing and model code, compact source tables, figure/table registries, executable audit entry points and tests. Raw HMP2/IBDMDB and PRISM files are acquired from their originating repositories and are not redistributed. Reproducibility is presented in three tiers: local code validation, evidence-table audit and optional full rerun after public-input acquisition. Reporting follows TRIPOD, STROBE and PROBAST principles [43–45]. Model interpretation and multiplicity are secondary descriptive analyses [46,47].
+The public package provides the production preprocessing and model code, compact source tables, figure/table registries, executable audit entry points and tests. Raw HMP2/IBDMDB and PRISM files are acquired from their originating repositories and are not redistributed. Reproducibility is presented in three tiers: local code validation, evidence-table audit and optional full rerun after public-input acquisition. Reporting follows TRIPOD, STROBE and PROBAST principles [45–47]. Model interpretation and multiplicity are secondary descriptive analyses [48,49].
 
 
