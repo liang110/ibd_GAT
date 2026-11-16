@@ -49,3 +49,9 @@ The formal Figure/Table source registry is the sole authoritative mapping for th
 
 ## Formal topology evidence
 The formal topology results are bound to the compact current-contract exports under `results/reconciled_evidence/topology_constraints/` and the runtime-boundary manifest `formal_topology_runtime_manifest.json`. The exported Real, Rewired and Identity objects are pre-convolution input configurations. The generic transfer launcher is retained as a reusable example and is not presented as the exact generator of every formal artifact.
+
+
+## Canonical evidence closure (2026-11-17)
+
+The manuscript-facing reconstruction uses the reconciled contract recorded in manuscript/manifests/canonical_contract_manifest_20261117.json (126 shared taxa; HMP2 1,638 manifest and 1,626 included observations; PRISM 220 observations). Compact evidence sources are under esults/reconciled_evidence/xgboost_current_contract/ and esults/reconciled_evidence/topology_contract_freeze_20261117/. Historical source tables are marked in manuscript/source_data/source_data_registry_20261117.csv and are not used for current figures. The canonical clean manuscript source is under manuscript/clean/canonical_20261117/.
+

@@ -1,0 +1,65 @@
+{
+  "ledger_id": "xgboost_current_contract_reconciled_20261117",
+  "experiment_id": "current_contract_xgboost_20261116",
+  "protocol": "current_contract_nested_source_only_selection_locked_external_target",
+  "contract_hash": "a18364d4aad01a1fc7e69971d04b9d7157789d9f688f03e7e23c0d20c017d91b",
+  "feature_contract": 126,
+  "n_source_splits": 10,
+  "inner_selection_splits": 3,
+  "training_scope": "Source-only inner grid selection for each participant-grouped panel, followed by refit on all rows of that panel before locked target scoring.",
+  "final_refit_uses_all_source_rows": true,
+  "scoring_unit": "visit",
+  "bootstrap_unit": "participant",
+  "target_labels_used_for_selection_or_refitting": false,
+  "candidate_grid": {
+    "n_estimators": 300,
+    "max_depth": [
+      2,
+      3
+    ],
+    "learning_rate": [
+      0.03,
+      0.1
+    ],
+    "subsample": 0.8,
+    "colsample_bytree": 0.8,
+    "tree_method": "hist",
+    "n_jobs": 1,
+    "early_stopping": false,
+    "class_weighting": "none"
+  },
+  "source_files": {
+    "artifacts\\hpc_results\\current_contract_xgboost_520399\\current_contract_xgboost_predictions_reconciled.csv": "e440a9e4549d704bf1ab717c8d061a2e640a2012b42d009e8a0018b1f1971bc4",
+    "artifacts\\hpc_results\\current_contract_xgboost_520399\\current_contract_xgboost_metrics.csv": "e3e9cec1a765ea5ee4b8c2efa2be99f08f52890fd27a4e2c1be62f1690dc35b9",
+    "artifacts\\hpc_results\\current_contract_xgboost_520399\\paired_common_draw\\xgboost_common_draw_pooled_summary.csv": "6b256f531cf4f540fddbe7add1f754469f8f9f699a3cd167eb16dcad64f86b5d",
+    "artifacts\\hpc_results\\current_contract_xgboost_520399\\paired_common_draw\\xgboost_common_draw_deltas.csv": "4db0fc728f9088ba3167a0eaaeba2ff6862ef0eb6761304ad04fc2e884c37ef1",
+    "manuscript_rebuild\\source_data\\Figure5_xgboost_origin_participant.csv": "78421723830d2c7dd9982f7c7435a102c14323472689959aef1891bb63b7498a",
+    "artifacts\\hpc_results\\current_contract_xgboost_520399\\current_contract_xgboost_summary.json": "d80f3c3f70bff49ef5fd789f939428e745d4944a2f97d2048e920260cc8b4ae5",
+    "artifacts\\hpc_results\\current_contract_xgboost_520399\\prediction_reconciliation_manifest.json": "f73496cbd5860f4d9d07cd3f704cddb3cbd3cf1166d02851d9edb0e2fcb775d0"
+  },
+  "outputs": {
+    "xgboost_common_draw_deltas.csv": "4db0fc728f9088ba3167a0eaaeba2ff6862ef0eb6761304ad04fc2e884c37ef1",
+    "xgboost_common_draw_summary.csv": "6b256f531cf4f540fddbe7add1f754469f8f9f699a3cd167eb16dcad64f86b5d",
+    "xgboost_display_registry.csv": "46309e7585102b765cf97916127f5dd5c9eebc7897e65221a2631445821d03ef",
+    "xgboost_metrics_by_split_recomputed.csv": "4954487b27a9abec25a66579cfced675a8dc5ab43ac5578731a8344d1c61d884",
+    "xgboost_origin_participant_summary.csv": "78421723830d2c7dd9982f7c7435a102c14323472689959aef1891bb63b7498a",
+    "xgboost_prediction_ledger_long.csv": "db1aebf654e8d68f2b65132159ddd1e8d8c1aa25f9719dc13818afba316b8dd9",
+    "xgboost_vs_gat_split_metric_deltas.csv": "2bda2dc91f259014a3f1d975d3ed860f8cea24c08bfb0bec52336510a008396b"
+  },
+  "validation": {
+    "prediction_rows": 18460,
+    "expected_rows": 18460,
+    "ten_splits_each_direction": true,
+    "all_target_sample_in_contract": true,
+    "all_participant_id_match": true,
+    "contract_hashes": [
+      "a18364d4aad01a1fc7e69971d04b9d7157789d9f688f03e7e23c0d20c017d91b"
+    ],
+    "metrics_match_runtime": true,
+    "max_metric_abs_diff": 8.326672684688674e-17,
+    "forward_target_origins": [
+      "discovery",
+      "validation"
+    ]
+  }
+}

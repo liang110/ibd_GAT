@@ -1,0 +1,42 @@
+{
+  "protocol": "gate_b_same_gat_graph_topology_intervention",
+  "contract_schema": "ibd_gat_canonical_contract_v2",
+  "contract_hash": "a18364d4aad01a1fc7e69971d04b9d7157789d9f688f03e7e23c0d20c017d91b",
+  "shared_feature_count": 126,
+  "n_splits": 10,
+  "k": 8,
+  "n_rewired_seeds": 5,
+  "epochs": 40,
+  "seed": 20261110,
+  "conditions": [
+    "real_spearman",
+    "rewired",
+    "identity"
+  ],
+  "add_self_loops": false,
+  "optimizer": {
+    "name": "Adam",
+    "lr": 0.001,
+    "weight_decay": 0.001
+  },
+  "models_refit": true,
+  "target_labels_used_for_refitting_or_selection": false,
+  "torch_threads": 4,
+  "input_hashes": {
+    "hmp_manifest": "40b0388e5e144c08cd1fac5f513b45b1577cbbac789fc4a10e31f212c81d4b24",
+    "prism_manifest": "f584b66c0275c3fe371dbc17af70475879ec628c845b9d9c2862c6e35f71b07b"
+  },
+  "run_signature": "d2599ff4cfe3d899201181749bc98732f75404d01a81ea768a67fc45dba09425",
+  "schema": "ibd_gat_topology_contract_freeze_v1",
+  "contract_status": "canonical_for_manuscript_reconstruction",
+  "manuscript_label": "formal_same-learner input-topology intervention",
+  "excluded_from_claims": [
+    "causal biological interaction",
+    "internal convolution self-loop handling",
+    "primary GAT mechanism decomposition"
+  ],
+  "artifact_sha256": {
+    "edge_ablation_metrics.csv": "6ff4f6c722865cf9d1168aa450519ae050238f6d3a2143a73a301536980a2b2f",
+    "gate_b_common_draw_summary.csv": "d6d9e1f4678c20569e61cb6e5f190afe1762e4b8e77b82f6c8387cc03db1c9d4"
+  }
+}
