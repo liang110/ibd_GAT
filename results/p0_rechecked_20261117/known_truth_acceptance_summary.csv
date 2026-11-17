@@ -1,0 +1,11 @@
+experiment,scenario,disease_truth_defined,n_seeds,pass_count,mean_auroc,sd_auroc,mean_truth_recovery,mean_hits_among_six_designated_candidates
+end_to_end_truth_panel,batch_only,False,10,10,0.4953566449081067,0.0499707597526994,,1.6
+end_to_end_truth_panel,null_control,False,10,10,0.5123366602343984,0.0351159941190224,,1.8
+end_to_end_truth_panel,signal_only,True,10,8,0.7379736360686133,0.076325088290853,5.1,
+end_to_end_truth_panel,signal_reversing_batch,True,10,7,0.7365150742523574,0.062743344098911,5.2,
+end_to_end_truth_panel,signal_topology_shift,True,10,10,0.7530961854217386,0.0336561126989959,5.2,
+selector_audit,batch_only,False,10,10,0.4595901214277795,0.0682677421948724,,3.3
+selector_audit,null_control,False,10,10,0.4975863352180315,0.0465626406589503,,2.6
+selector_audit,signal_only,True,10,10,1.0,0.0,6.0,
+selector_audit,signal_reversing_batch,True,10,10,1.0,0.0,6.0,
+selector_audit,signal_topology_shift,True,10,10,1.0,0.0,6.0,

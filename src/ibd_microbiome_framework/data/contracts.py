@@ -167,6 +167,15 @@ def write_contracts(
     specs: Sequence[MatrixSpec], output_dir: Path, source_root: Path
 ) -> Dict[str, object]:
     """Write manifests and a feature registry; never alter source matrices."""
+    # Check before writing anything: a duplicate pair would overwrite the
+    # registry entries and the modality-specific manifest. File names are
+    # lowercase, so compare pairs case-insensitively as well.
+    seen: set[tuple[str, str]] = set()
+    for spec in specs:
+        key = (spec.cohort.casefold(), spec.modality.casefold())
+        if key in seen:
+            raise ValueError(f"Duplicate cohort/modality pair: {spec.cohort}/{spec.modality}")
+        seen.add(key)
     output_dir.mkdir(parents=True, exist_ok=True)
     axes: Dict[str, tuple[List[str], List[str]]] = {}
     feature_lists: Dict[str, Sequence[str]] = {}
@@ -188,7 +197,13 @@ def write_contracts(
             }
         )
         manifest = build_manifest(spec, samples)
-        manifest.to_csv(output_dir / f"cohort_manifest_{spec.cohort.lower()}.csv", index=False)
+        # Distinguish modalities; the historical cohort-only name remains an
+        # exact microbiome alias for existing pipeline entry points.
+        cohort_name = spec.cohort.lower()
+        modality_name = spec.modality.lower()
+        manifest.to_csv(output_dir / f"cohort_manifest_{cohort_name}_{modality_name}.csv", index=False)
+        if spec.modality == "microbiome":
+            manifest.to_csv(output_dir / f"cohort_manifest_{cohort_name}.csv", index=False)
 
     registry = build_feature_registry(specs, feature_lists)
     registry.to_csv(output_dir / "feature_registry.csv", index=False)

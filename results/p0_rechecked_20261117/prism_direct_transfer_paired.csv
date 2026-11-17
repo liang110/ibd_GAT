@@ -1,0 +1,7 @@
+direction,reference,point_mean_delta_auroc,bootstrap_mean_delta_auroc,ci_low,ci_high,n_bootstrap,n_source_splits,seed,bootstrap_unit,scoring_unit,interval
+PRISM_discovery_to_validation,elastic_net,-0.21664904862579276,-0.21597007315899244,-0.3093391637048217,-0.11627094017094017,5000,10,20261117,participant,participant,shared_target_draw_fixed_source_models
+PRISM_discovery_to_validation,random_forest,-0.27415433403805495,-0.2751621297443955,-0.38055397005631814,-0.15899775780336964,5000,10,20261117,participant,participant,shared_target_draw_fixed_source_models
+PRISM_discovery_to_validation,no_message_mlp,-0.19772727272727275,-0.19669758756721217,-0.2889356728778468,-0.09620670376534227,5000,10,20261117,participant,participant,shared_target_draw_fixed_source_models
+PRISM_validation_to_discovery,elastic_net,-0.15190811861934855,-0.15144772454808011,-0.20721594534936028,-0.0909282738095238,5000,10,20261117,participant,participant,shared_target_draw_fixed_source_models
+PRISM_validation_to_discovery,random_forest,-0.18686193485658728,-0.18620459352691768,-0.2283838873589077,-0.14052404197810509,5000,10,20261117,participant,participant,shared_target_draw_fixed_source_models
+PRISM_validation_to_discovery,no_message_mlp,-0.1550437530384054,-0.1545649946508867,-0.19751304967238836,-0.10865242294603791,5000,10,20261117,participant,participant,shared_target_draw_fixed_source_models

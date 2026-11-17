@@ -1,6 +1,6 @@
 # IBD microbiome transfer protocol
 
-Compact code and evidence sources for **A bidirectional cross-cohort benchmark of graph-attention and tabular models for microbiome-based classification of inflammatory bowel disease**.
+Compact code and evidence sources for **An auditable framework for directional transfer of graph and tabular microbiome classifiers in inflammatory bowel disease**.
 
 The release implements a frozen microbiome feature contract, source-only preprocessing, participant-aware uncertainty, bidirectional transfer and controlled topology comparisons. Its contribution is an auditable evaluation protocol under declared data and graph conditions.
 
@@ -45,13 +45,26 @@ The current HMP2/PRISM contract records 1,638 HMP2 manifest observations, 1,626 
 2. **Evidence audit:** compact source tables, manifests and figure/table registries.
 3. **Full rerun:** optional after acquiring the public cohort inputs and matching the declared environment.
 
-The formal Figure/Table source registry is the sole authoritative mapping for this manuscript; historical contracts remain outside the current registry. The repository retains only files that directly support manuscript tables, figures and audit claims. It does not redistribute raw cohort data or transient scheduler outputs.
+Figure and table sources are identified by analysis and scoring unit; current P0-rechecked summaries are listed below. The repository retains only files that directly support manuscript tables, figures and audit claims. It does not redistribute raw cohort data or transient scheduler outputs.
 
 ## Formal topology evidence
 The formal topology results are bound to the compact current-contract exports under `results/reconciled_evidence/topology_constraints/` and the runtime-boundary manifest `formal_topology_runtime_manifest.json`. The exported Real, Rewired and Identity objects are pre-convolution input configurations. The generic transfer launcher is retained as a reusable example and is not presented as the exact generator of every formal artifact.
 
 
-## Canonical evidence closure (2026-11-17)
+## Data-contract outputs
 
-The manuscript-facing reconstruction uses the reconciled contract recorded in manuscript/manifests/canonical_contract_manifest_20261117.json (126 shared taxa; HMP2 1,638 manifest and 1,626 included observations; PRISM 220 observations). Compact evidence sources are under esults/reconciled_evidence/xgboost_current_contract/ and esults/reconciled_evidence/topology_contract_freeze_20261117/. Historical source tables are marked in manuscript/source_data/source_data_registry_20261117.csv and are not used for current figures. The canonical clean manuscript source is under manuscript/clean/canonical_20261117/.
+The contract builder writes `cohort_manifest_<cohort>_<modality>.csv` for each input modality. For compatibility with existing microbiome analysis commands, `cohort_manifest_<cohort>.csv` is an exact alias of the microbiome manifest. Use a fresh output directory when rebuilding contracts. Raw input matrices are never modified.
 
+HMP2/IBDMDB resources are available through https://ibdmdb.org/; the original PRISM sequence project is NCBI BioProject PRJNA400072. The processed HMP2 manifest used here does not contain a raw-accession-to-local-sample crosswalk.
+
+## P0-rechecked analysis summaries
+
+Compact aggregate tables are available in `results/p0_rechecked_20261117/`. They cover the principal common-target paired summaries, XGBoost scoring-unit metrics, direct PRISM provenance transfer, taxon-aligned topology overlap, graph interventions and known-truth acceptance. Values and intervals use the units documented in the tables and manuscript. The data do not include individual participant IDs or raw prediction ledgers.
+
+Older source-table and registry entries predate this recheck and may retain superseded scoring-unit, topology-index or figure-coordinate values. Use the P0-rechecked aggregate tables for the revised manuscript; the existing older validators do not by themselves validate these new tables.
+
+Run `python results/p0_rechecked_20261117/validate_p0_rechecked.py` for read-only checks of these compact tables. This check does not regenerate predictions or bootstrap samples.
+
+In the synthetic acceptance table, `mean_hits_among_six_designated_candidates` is a restricted candidate-hit count and is not the overall false-positive count. Topology-overlap summaries include only the Spearman edge sets whose node order and formal real-edge exports were independently reconciled.
+
+The XGBoost procedure uses source-only inner selection followed by a final refit on the complete source cohort. The primary GAT is trained on each grouped source-training split. Their external targets and candidate registry are shared, but their final training samples and fitted preprocessing matrices differ. Topology intervention full-batch training uses each source-training partition, not a complete-cohort refit. Participant bootstrap intervals are conditional on the fitted source models.
