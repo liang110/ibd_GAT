@@ -9,7 +9,7 @@ def make_specs(tmp_path):
     for cohort in ("HMP2", "PRISM"):
         ids = [f"{cohort}|s{i}" for i in range(3)]
         metadata = tmp_path / f"{cohort}_metadata.csv"
-        pd.DataFrame({"sample_id": ids, "group": ["CD", "Control", "CD"]}).to_csv(metadata, index=False)
+        pd.DataFrame({"sample_id": ids, "Participant ID": ids, "group": ["CD", "Control", "CD"]}).to_csv(metadata, index=False)
         for modality, samples in (("microbiome", ids), ("metabolome", ids[:1])):
             matrix = tmp_path / f"{cohort}_{modality}.csv"
             pd.DataFrame([[1.0] * len(samples)], index=["Bacteroides vulgatus" if modality == "microbiome" else "citrate"], columns=samples).to_csv(matrix, index_label="feature")

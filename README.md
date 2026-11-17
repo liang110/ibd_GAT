@@ -37,7 +37,9 @@ python scripts/audit_cohort_independence_20261116.py \
   --output-dir artifacts/accession_audit
 ```
 
-The current HMP2/PRISM contract records 1,638 HMP2 manifest observations, 1,626 included observations from 130 participants, and 220 PRISM observations from 220 operational participants. The current Figure 3 source table records 80 synthetic participants, 240 observations, 43 mean participant overlaps under sample-level splitting, zero overlap under participant-grouped splitting, and current-contract mean AUROC values of 0.960 and 0.552182. The HMP2/PRISM audit records zero exact, normalized and substring overlap for sample and participant identifiers in both manifest and included panels. The direct PRISM discovery-to-validation transfer evidence is stored separately under `results/reconciled_evidence/prism_discovery_validation_transfer/`; its recruitment-source confounding remains explicit. The local HMP2 manifest contains no raw accession column, so accession-to-sample mapping remains a provider-level metadata boundary.
+The HMP2 contract contains 1,638 metagenomic records before exclusion and 1,626 included records from 130 participants. The included records correspond to 1,584 participant–visit-number combinations; repeated records for a combination are not counted as independent visits. The Franzosa target panel contains 220 records from 220 operational participants: 155 discovery and 65 Netherlands validation. Record-level metrics weight each included record equally; participant-level metrics average that participant's record predictions before scoring. Participant bootstrap resamples participants. The 1,584 combinations match public metadata `site_sub_coll` keys, but the cause of repeated records has not been established by this check.
+
+The Figure 3 synthetic control contains 80 participants and 240 observations. It evaluates splitting and data-processing controls. The HMP2/Franzosa identifier audit found no exact or normalized identifier overlap in the checked manifests; different study IDs alone cannot establish that no individual participated in both studies. The direct discovery-to-validation transfer is available under `results/reconciled_evidence/prism_discovery_validation_transfer/`.
 
 ## Reproducibility tiers
 
@@ -55,16 +57,20 @@ The formal topology results are bound to the compact current-contract exports un
 
 The contract builder writes `cohort_manifest_<cohort>_<modality>.csv` for each input modality. For compatibility with existing microbiome analysis commands, `cohort_manifest_<cohort>.csv` is an exact alias of the microbiome manifest. Use a fresh output directory when rebuilding contracts. Raw input matrices are never modified.
 
+For longitudinal HMP2 input, provide `Participant ID` or `participant_id` in the metadata. If both are present, nonempty values must agree for every included record; missing identifiers or conflicting values cause contract construction to fail. Do not substitute sample identifiers for participants. PRISM's cross-sectional input convention continues to use the sample identifier as its operational participant identifier.
+
 HMP2/IBDMDB resources are available through https://ibdmdb.org/; the original PRISM sequence project is NCBI BioProject PRJNA400072. The processed HMP2 manifest used here does not contain a raw-accession-to-local-sample crosswalk.
 
 ## P0-rechecked analysis summaries
 
 Compact aggregate tables are available in `results/p0_rechecked_20261117/`. They cover the principal common-target paired summaries, XGBoost scoring-unit metrics, direct PRISM provenance transfer, taxon-aligned topology overlap, graph interventions and known-truth acceptance. Values and intervals use the units documented in the tables and manuscript. The data do not include individual participant IDs or raw prediction ledgers.
 
-Older source-table and registry entries predate this recheck and may retain superseded scoring-unit, topology-index or figure-coordinate values. Use the P0-rechecked aggregate tables for the revised manuscript; the existing older validators do not by themselves validate these new tables.
+Older source-table and registry entries predate this recheck and may retain superseded scoring-unit, topology-index or figure-coordinate values. Use the P0-rechecked aggregate tables for the revised manuscript; where a legacy source calls HMP2 scoring `visit`, its original calculation is record-level. The existing older validators do not by themselves validate these tables.
 
 Run `python results/p0_rechecked_20261117/validate_p0_rechecked.py` for read-only checks of these compact tables. This check does not regenerate predictions or bootstrap samples.
 
 In the synthetic acceptance table, `mean_hits_among_six_designated_candidates` is a restricted candidate-hit count and is not the overall false-positive count. Topology-overlap summaries include only the Spearman edge sets whose node order and formal real-edge exports were independently reconciled.
 
 The XGBoost procedure uses source-only inner selection followed by a final refit on the complete source cohort. The primary GAT is trained on each grouped source-training split. Their external targets and candidate registry are shared, but their final training samples and fitted preprocessing matrices differ. Topology intervention full-batch training uses each source-training partition, not a complete-cohort refit. Participant bootstrap intervals are conditional on the fitted source models.
+
+The archived topology intervention exports support per-edge checks for its Real, Rewired and Identity inputs. Using the archived selected-feature lists and reconstructed source partitions recovers all 20 recorded primary GAT input-graph hashes. The original per-person primary source-split membership lists were not independently archived; graph-hash agreement and matching split counts are supporting evidence, not a direct recovery of those lists.

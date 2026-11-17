@@ -79,6 +79,24 @@ def infer_prism_origin(sample_id: str) -> str:
     return "unknown"
 
 
+def _longitudinal_participant_ids(manifest: pd.DataFrame, cohort: str) -> pd.Series:
+    """Resolve participant aliases without ever treating sample IDs as people."""
+    aliases = [name for name in ("Participant ID", "participant_id") if name in manifest]
+    if not aliases:
+        raise ValueError(f"{cohort}: participant identifier required: Participant ID or participant_id")
+    values = [manifest[name].astype("string").str.strip().replace("", pd.NA) for name in aliases]
+    if len(values) == 2:
+        conflict = values[0].notna() & values[1].notna() & values[0].ne(values[1])
+        if conflict.any():
+            raise ValueError(f"{cohort}: participant identifier columns conflict for {int(conflict.sum())} rows")
+        resolved = values[0].fillna(values[1])
+    else:
+        resolved = values[0]
+    if resolved.isna().any():
+        raise ValueError(f"{cohort}: participant identifier missing for {int(resolved.isna().sum())} rows")
+    return resolved
+
+
 def build_manifest(spec: MatrixSpec, matrix_samples: Sequence[str]) -> pd.DataFrame:
     metadata = pd.read_csv(spec.metadata_path)
     if "sample_id" not in metadata.columns:
@@ -100,7 +118,7 @@ def build_manifest(spec: MatrixSpec, matrix_samples: Sequence[str]) -> pd.DataFr
         manifest["timepoint"] = manifest.get("timepoint", np.nan)
     else:
         manifest["origin"] = "HMP2"
-        manifest["participant_id"] = manifest.get("Participant ID", manifest["sample_id"])
+        manifest["participant_id"] = _longitudinal_participant_ids(manifest, spec.cohort)
         manifest["site"] = manifest.get("site_name", "unknown")
         manifest["timepoint"] = manifest.get("week_num", np.nan)
     if "group" not in manifest.columns:
