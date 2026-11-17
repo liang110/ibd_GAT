@@ -54,7 +54,7 @@ def canonical_taxon(value: object) -> Optional[str]:
     text = text.replace("unclassified", "").strip()
     if not text or text in {"feature", "species", "metabolite"}:
         return None
-    if normalize_text(text) in FORBIDDEN_CLINICAL_FEATURES:
+    if is_forbidden_feature(text):
         return None
     return text
 
@@ -64,10 +64,21 @@ def canonical_metabolite(value: object) -> Optional[str]:
     text = normalize_text(value)
     if not text or text in {"feature", "metabolite"}:
         return None
-    if text in FORBIDDEN_CLINICAL_FEATURES:
+    if is_forbidden_feature(text):
         return None
     return text
 
 
 def is_forbidden_feature(value: object) -> bool:
-    return normalize_text(value) in FORBIDDEN_CLINICAL_FEATURES
+    text = normalize_text(value)
+    if text in FORBIDDEN_CLINICAL_FEATURES:
+        return True
+    # Match explicitly named clinical measurement aliases without changing the
+    # taxonomic canonicalizer or rejecting arbitrary names containing the term.
+    clinical_key = re.sub(r"[.\-_/()\[\]]+", " ", text)
+    clinical_key = re.sub(r"\s+", " ", clinical_key).strip()
+    return bool(re.fullmatch(
+        r"(?:(?:fecal|faecal|stool) )?calprotectin"
+        r"(?: (?:concentration|level))?(?: (?:mg kg|ug g|µg g|μg g))?",
+        clinical_key,
+    ))

@@ -74,3 +74,16 @@ In the synthetic acceptance table, `mean_hits_among_six_designated_candidates` i
 The XGBoost procedure uses source-only inner selection followed by a final refit on the complete source cohort. The primary GAT is trained on each grouped source-training split. Their external targets and candidate registry are shared, but their final training samples and fitted preprocessing matrices differ. Topology intervention full-batch training uses each source-training partition, not a complete-cohort refit. Participant bootstrap intervals are conditional on the fitted source models.
 
 The archived topology intervention exports support per-edge checks for its Real, Rewired and Identity inputs. Using the archived selected-feature lists and reconstructed source partitions recovers all 20 recorded primary GAT input-graph hashes. The original per-person primary source-split membership lists were not independently archived; graph-hash agreement and matching split counts are supporting evidence, not a direct recovery of those lists.
+
+## Current manuscript evidence index
+
+Use `manuscript/registry/figure_table_source_registry_20261117.csv` for the current main and supplementary display items. Entries explicitly mark quantities requiring controlled-access predictions. The historical `results/reconciled_evidence/evidence_registry.csv` and its validator describe an earlier supplement; they are not the current index. The older `paired_bootstrap_summary_b5000.csv` averages split-wise interval endpoints and is not the manuscript common-target interval; use `results/p0_rechecked_20261117/prism_direct_transfer_paired.csv` for Supplementary Table 8. Historical `visit` fields denote record-level scoring in this manuscript.
+
+```bash
+python repro/audits/validate_current_manuscript_index.py --root .
+python scripts/run_no_prior_gat_transfer.py --contract-dir PATH_TO_FROZEN_CONTRACT --legacy-root PATH_TO_PROCESSED_INPUTS --output-dir PATH_TO_OUTPUT --topology spearman --n-splits 10
+```
+
+The latter command requires the original processed `manual_abundance.csv`, `prism_abundance_clean.csv`, metadata and frozen feature contract. These inputs are not bundled. Source repositories and acquisition constraints are in the manuscript and `configs/data_catalog.json`; the complete raw-to-processed conversion is not documented here. The command does not claim exact historical execution environment or recovery of the original participant split lists.
+
+The `direct_stratum_transfer_draws` value of 1,000 in `repro/audits/training_configuration.json` records the earlier direct-transfer analysis. The final Supplementary Table 8 uses the later 5,000 common-target-participant draws in the indexed P0-rechecked table; these refer to distinct analyses.
