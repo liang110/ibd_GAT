@@ -4,7 +4,20 @@ This repository compares classifiers for IBD versus non-IBD discrimination acros
 
 The [framework diagram](manuscript/figures/Figure1_population_benchmark.png) is the Figure 1 embedded in the accompanying manuscript. The section drafts in `manuscript/clean/` and the older plotting files document earlier editorial versions. The [display index](manuscript/registry/figure_table_source_registry_20261117.csv) identifies the current results.
 
+## Run the scoring example
+
+From the repository root or the extracted `Supplementary_Software_1.zip`, use Python 3.10 or later with NumPy and pandas installed. The [predictions](examples/fixed_predictions/predictions.csv) and [target manifest](examples/fixed_predictions/targets.csv) contain hand-written probabilities for two procedures and two fits, with 12 records from eight fictional participants across two recruitment groups.
+
+```bash
+python scripts/score_fixed_predictions.py --predictions examples/fixed_predictions/predictions.csv --target-manifest examples/fixed_predictions/targets.csv --candidate procedure_a --references procedure_b --expected-fits 2 --n-bootstrap 5000 --seed 73 --output toy_scores.csv
+python examples/fixed_predictions/check_output.py toy_scores.csv
+```
+
+The first command writes 18 comparisons to a fresh output path. The second compares every output field with the [expected scores](examples/fixed_predictions/expected_scores.csv) to an absolute numerical tolerance of 1e−12. Pooled participant AUROCs for A and B are 0.6406 and 0.7500. Their observed difference is −0.1094, and the conditional 95% interval spans −0.5939 to +0.4000. In clinic B, participant Brier scores are 0.2722 and 0.1671, giving a difference of +0.1051 [+0.0496, +0.2033] in favour of B for probability error. These illustrative values describe the synthetic target. The next section gives the IBD study results.
+
 ## Read the model comparison
+
+To print the ten study comparisons in Box 1, run `python scripts/show_target_decisions.py`. The command reads the archived GAT and random forest results for five target settings. Each row gives the observed difference, its conditional interval and the resulting choice for AUROC or Brier. The synthetic example above illustrates the same scoring questions using fictional participants.
 
 [Figure 5 and Supplementary Table 12](manuscript/source_data/figure5_model_comparison.csv) compare five fitted procedures in four settings. Rows give the ten-fit observed means and source-fit SDs for AUROC, average precision and Brier score. The paired columns give the observed mean GAT-minus-reference AUROC difference, its bootstrap mean (the Figure 5 marker) and the percentile interval from 5,000 target-participant draws shared across the ten fixed fits. The GAT row has no self-contrast. [Ten paired GAT/RF fits per setting](manuscript/source_data/figure5_gat_rf_by_fit.csv) show variation over source fits.
 

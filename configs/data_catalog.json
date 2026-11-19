@@ -16,6 +16,15 @@
     "prepare": "scripts/prepare_published_profiles.py",
     "HMP2_MGX_taxonomy": {
       "file": "taxonomic_profiles_3.tsv.gz",
+      "release": "IBDMDB HMP2 MGX 2018.18, updated bioBakery 3.0 merged taxonomic profiles",
+      "product_index": "https://ibdmdb.org/downloads/html/products_MGX_2017-08-12.html",
+      "feature_definition": "Reported species rows (s__ with no t__ subclade), terminal taxon name, relative abundance.",
+      "marker_database_check": {
+        "header": "mpa_v30_CHOCOPhlAn_201901",
+        "scope": "Five provider profiles carry this header. All their clade abundances match the corresponding merged-table columns.",
+        "sample_ids": ["MSMAPC57", "CSM79HN6", "CSM5FZ3N_P", "HSM7J4N4", "PSMB4MC7"],
+        "profile_url_template": "https://g-227ca.190ebd.75bc.data.globus.org/ibdmdb/products/HMP2/MGX/taxonomic_profile3_WGS/{sample_id}_taxonomic_profile_3.tsv"
+      },
       "source": "https://g-227ca.190ebd.75bc.data.globus.org/ibdmdb/products/HMP2/MGX/2018-05-04/taxonomic_profiles_3.tsv.gz",
       "sha256": "d790ff15e46d61ca0cadc55d9f918de4e3415d7f97c992ac37610aaee02117ed"
     },
@@ -28,6 +37,9 @@
       "file": "41564_2018_306_MOESM6_ESM.xlsx",
       "source": "https://www.nature.com/articles/s41564-018-0306-4#Sec35",
       "sheet": "dataset_s4",
+      "profiler": "MetaPhlAn2 v2.2.0, default parameters",
+      "feature_definition": "Published species relative abundances. The source study retained species exceeding 0.1% relative abundance in at least five samples.",
+      "profiling_methods": "https://pmc.ncbi.nlm.nih.gov/articles/mid/EMS80310/",
       "sha256": "9aa38fc392605263ae96240e260d61a017e55a0bf2473274faad89cd4ee12cbf"
     },
     "optional_HMP2_dysbiosis_scores": {

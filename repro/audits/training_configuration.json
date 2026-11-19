@@ -1,5 +1,5 @@
 {
-  "contract": "126 shared microbiome features; source-only closure/CLR/MI fitting",
+  "contract": "Positive-mass records undergo row-wise closure over 126 shared taxa. Source-training data determine the prevalence mask, CLR pseudocount, scaling and mutual-information feature selection.",
   "graph": {
     "topology": "source-training Spearman top-k",
     "k": 8,
@@ -16,7 +16,11 @@
       "epochs": 40,
       "train_batch_size": 32,
       "prediction_batch_size": 64,
-      "shuffle": true
+      "shuffle": true,
+      "model_seed": "20261110 + split, in each direction",
+      "add_self_loops": true,
+      "operator_setting_basis": "Public primary runner uses the GATv2Conv default in torch-geometric 2.4.0.",
+      "implementation": "scripts/run_no_prior_gat_transfer.py"
     },
     "identity_aware_topology_sensitivity": {
       "loss": "binary_cross_entropy_with_logits",
@@ -28,13 +32,15 @@
       "train_batch_size": "full_source_panel",
       "prediction_batch_size": 128,
       "shuffle": false,
-      "embedding_dim": 8
+      "embedding_dim": 8,
+      "model_seed_formula": "20261110 + direction_index*100000 + split",
+      "rewire_seed_formula": "model_seed + 1000 + rewired_seed"
     },
     "randomness": {
-      "torch_numpy": "seeds set per source split",
-      "model_seed_formula": "base_seed + direction_index*100000 + split",
-      "rewire_seed_formula": "model_seed + 1000 + rewired_seed",
-      "torch_threads": 4
+      "source_split_seed": 20261110,
+      "split_indices": "1 through 10",
+      "full_batch_direction_indices": "0 for HMP2 to Franzosa, 1 for Franzosa to HMP2",
+      "full_batch_rewired_seed_indices": "0 through 4"
     },
     "tabular_references": "declared class_weight and random_state settings are in the corresponding benchmark scripts",
     "gate_b_topology_intervention": {
@@ -49,20 +55,22 @@
       "prediction_batch_size": 128,
       "shuffle": false,
       "torch_threads": 4,
-      "model_seed_formula": "base_seed + direction_index*100000 + split",
+      "operator_configuration": "results/reconciled_evidence/topology_constraints/formal_topology_runtime_manifest.json",
+      "model_seed_formula": "20261110 + direction_index*100000 + split",
       "rewire_seed_formula": "model_seed + 1000 + rewired_seed"
     },
     "bootstrap_units": {
       "gate_b": "participant-cluster target draws shared across splits and conditions",
       "primary_draws": 5000,
-      "direct_prism_stratum_transfer_draws": 1000
+      "direct_prism_stratum_transfer_draws": 5000
     }
   },
   "uncertainty": {
     "source_splits": 10,
     "target_resampling": "participant-cluster bootstrap",
     "primary_draws": 5000,
-    "direct_stratum_transfer_draws": 1000
+    "direct_stratum_transfer_draws": 5000,
+    "direct_stratum_transfer_source": "results/p0_rechecked_20261117/prism_direct_transfer_paired.csv"
   },
   "selection": {
     "target_labels_used_for_refitting_or_selection": false,
@@ -70,8 +78,8 @@
   },
   "qa": {
     "required": [
-      "edge self-loop count = 0",
-      "identity Jaccard = 0",
+      "Real and rewired inputs have zero self-loops; identity has one per node.",
+      "Real versus identity and rewired versus identity have zero input-edge Jaccard overlap.",
       "edge hash reconstruction passes",
       "truth acceptance recomputes exactly"
     ]

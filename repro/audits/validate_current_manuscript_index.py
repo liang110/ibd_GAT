@@ -8,12 +8,39 @@ from pathlib import Path
 
 import pandas as pd
 
-EXPECTED = {f'Figure{i}' for i in (1, 2, 3, 4, 6, 7)} | {'Figure5a', 'Figure5b'} | {f'Table{i}' for i in range(1, 5)} | {f'SuppTable{i}' for i in range(1, 14)} | {'SuppFigureS1'}
+EXPECTED = {f'Figure{i}' for i in (1, 2, 3, 4, 6, 7)} | {'Figure5a', 'Figure5b'} | {f'Table{i}' for i in range(1, 5)} | {f'SuppTable{i}' for i in range(1, 14)} | {'SuppFigureS1', 'Box1'}
 
 def require(test, message):
     if not test:
         raise ValueError(message)
 
+
+def check_box1(root, objects):
+    source = 'results/p0_rechecked_20261117/primary_common_draw_summary.csv'
+    script = 'scripts/show_target_decisions.py'
+    require(objects['Box1'] == [source, script], 'Box 1 must reference the common draws and display script')
+    run = subprocess.run([sys.executable, str(root / script), '--root', str(root)],
+                         check=True, capture_output=True, text=True)
+    rows = list(csv.DictReader(run.stdout.splitlines()))
+    expected = [
+        ('Combined Franzosa', 'record', 'roc_auc', (.0993, .0476, .1491), 'GAT'),
+        ('Combined Franzosa', 'record', 'brier', (-.0279, -.0381, -.0173), 'GAT'),
+        ('PRISM discovery', 'record', 'roc_auc', (.1030, .0487, .1590), 'GAT'),
+        ('PRISM discovery', 'record', 'brier', (-.0275, -.0382, -.0165), 'GAT'),
+        ('Netherlands validation', 'record', 'roc_auc', (.0702, -.0289, .1736), 'unresolved'),
+        ('Netherlands validation', 'record', 'brier', (-.0287, -.0511, -.0058), 'GAT'),
+        ('HMP2', 'record', 'roc_auc', (-.0835, -.1501, -.0182), 'RF'),
+        ('HMP2', 'record', 'brier', (-.0061, -.0320, .0174), 'unresolved'),
+        ('HMP2', 'participant', 'roc_auc', (-.0915, -.1644, -.0182), 'RF'),
+        ('HMP2', 'participant', 'brier', (.0086, -.0119, .0272), 'unresolved'),
+    ]
+    require(len(rows) == len(expected), 'Missing or extra Box 1 comparisons')
+    for row, (target, unit, metric, triple, choice) in zip(rows, expected):
+        key = row['target'], row['scoring_unit'], row['metric']
+        numbers = tuple(round(float(row[k]), 4) for k in
+                        ('observed_gat_minus_rf', 'conditional_95_low', 'conditional_95_high'))
+        require(key == (target, unit, metric) and numbers == triple and row['supported_procedure'] == choice,
+                f'Box 1 comparison no longer matches its manuscript entry for {target}/{unit}/{metric}')
 
 def check_selector_controls(data):
     sums = {'null_control': 30, 'batch_only': 27, 'signal_only': 20,
@@ -136,6 +163,15 @@ def main():
     f3 = pd.read_csv(root / 'manuscript/source_data/Figure3_repeated_leakage.csv')
     require(len(f3) == 10 and abs(f3.random_split_subject_overlap.mean() - 43) < 1e-9, 'Figure 3 seed or overlap mismatch')
     objects = {r['display_id']: r['source_object'].split(';') for r in rows}
+    check_box1(root, objects)
+    paired_s9 = 'results/reconciled_evidence/identity_aware_topology/paired_split_contrasts.csv'
+    require(paired_s9 in objects['SuppTable9'], 'Missing stored taxon-embedding fit contrasts for Table S9')
+    pairs = pd.read_csv(root / paired_s9)
+    require(len(pairs) == 20 and not pairs.duplicated(['direction', 'split']).any()
+            and set(pairs.direction) == {'HMP2_to_PRISM', 'PRISM_to_HMP2'}
+            and all(set(group.split) == set(range(1, 11)) for _, group in pairs.groupby('direction'))
+            and (pairs.real_auroc - pairs.rewired_auroc - pairs.real_minus_rewired).abs().lt(1e-12).all(),
+            'Incorrect Table S9 identity-aware paired source fits')
     s12_sources = ['manuscript/source_data/figure5_model_comparison.csv', 'manuscript/source_data/figure5_gat_rf_by_fit.csv']
     for label in ['Figure5a', 'Figure5b']:
         require(objects[label] == s12_sources, f'{label} must reference the common Figure 5/S12 sources')
@@ -172,7 +208,7 @@ def main():
         actual = (row.n_target_records, row.n_target_participants, row.auroc_observed_mean,
                   row.average_precision_observed_mean, row.brier_observed_mean)
         require(actual == expected[(row.source,row.target)] and row.n_source_ensembles == 10 and row.scoring_unit == 'record', 'S11 observed summaries or panel mismatch')
-    print(f'PASS: {len(rows)} current display entries; key contrasts, S1 selector truth, S12 paired Brier and S13 scoring rules checked')
+    print(f'PASS: {len(rows)} current display entries; Box 1 decisions, S1 selector truth, S12 paired Brier and S13 scoring rules checked')
     print('LIMIT: summaries do not reproduce bootstrap draws or certify access to excluded individual predictions')
 
 if __name__ == '__main__':

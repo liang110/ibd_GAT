@@ -1,0 +1,13 @@
+direction,sample_id,participant_id,outcome,origin
+toy_source_to_target,r01,p01,1,clinic_a
+toy_source_to_target,r02,p01,1,clinic_a
+toy_source_to_target,r03,p02,0,clinic_a
+toy_source_to_target,r04,p03,1,clinic_a
+toy_source_to_target,r05,p04,0,clinic_a
+toy_source_to_target,r06,p04,0,clinic_a
+toy_source_to_target,r07,p05,1,clinic_b
+toy_source_to_target,r08,p05,1,clinic_b
+toy_source_to_target,r09,p06,0,clinic_b
+toy_source_to_target,r10,p07,1,clinic_b
+toy_source_to_target,r11,p08,0,clinic_b
+toy_source_to_target,r12,p08,0,clinic_b
