@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-title: "An auditable framework for directional transferability of relational and tabular microbiome representations in inflammatory bowel disease"
+title: "A framework for benchmarking microbiome classifiers across heterogeneous inflammatory bowel disease cohorts"
 message: "If you use this software or evidence package, cite the accompanying manuscript."
 type: software
 authors:

@@ -2,23 +2,27 @@
 """Check paths and key scientific identity in the current manuscript index."""
 import argparse
 import csv
+import io
+import itertools
+import json
+import zipfile
 import subprocess
 import sys
 from pathlib import Path
 
 import pandas as pd
 
-EXPECTED = {f'Figure{i}' for i in (1, 2, 3, 4, 6, 7)} | {'Figure5a', 'Figure5b'} | {f'Table{i}' for i in range(1, 5)} | {f'SuppTable{i}' for i in range(1, 14)} | {'SuppFigureS1', 'Box1'}
+EXPECTED = {f'Figure{i}' for i in (1, 2, 3, 4, 6)} | {'Figure5a', 'Figure5b'} | {f'Table{i}' for i in range(1, 5)} | {f'SuppTable{i}' for i in range(1, 16)} | {'SuppFigureS1', 'SuppFigureS2'}
 
 def require(test, message):
     if not test:
         raise ValueError(message)
 
 
-def check_box1(root, objects):
+def check_decision_table(root, objects):
     source = 'results/p0_rechecked_20261117/primary_common_draw_summary.csv'
     script = 'scripts/show_target_decisions.py'
-    require(objects['Box1'] == [source, script], 'Box 1 must reference the common draws and display script')
+    require(objects['Table4'] == [source, script], 'Table 4 must reference the common draws and display script')
     run = subprocess.run([sys.executable, str(root / script), '--root', str(root)],
                          check=True, capture_output=True, text=True)
     rows = list(csv.DictReader(run.stdout.splitlines()))
@@ -34,13 +38,74 @@ def check_box1(root, objects):
         ('HMP2', 'participant', 'roc_auc', (-.0915, -.1644, -.0182), 'RF'),
         ('HMP2', 'participant', 'brier', (.0086, -.0119, .0272), 'unresolved'),
     ]
-    require(len(rows) == len(expected), 'Missing or extra Box 1 comparisons')
+    require(len(rows) == len(expected), 'Missing or extra Table 4 comparisons')
     for row, (target, unit, metric, triple, choice) in zip(rows, expected):
         key = row['target'], row['scoring_unit'], row['metric']
         numbers = tuple(round(float(row[k]), 4) for k in
                         ('observed_gat_minus_rf', 'conditional_95_low', 'conditional_95_high'))
         require(key == (target, unit, metric) and numbers == triple and row['supported_procedure'] == choice,
-                f'Box 1 comparison no longer matches its manuscript entry for {target}/{unit}/{metric}')
+                f'Table 4 comparison no longer matches its manuscript entry for {target}/{unit}/{metric}')
+
+def check_taxon_alignment(root, objects):
+    archive = 'releases/formal_topology_edge_export_20261114.zip'
+    summary_file = 'results/p0_rechecked_20261117/topology_taxon_aligned_summary.csv'
+    require(archive in objects['Figure6'] and archive in objects['SuppTable5'], 'Missing formal edge lists')
+    summary = pd.read_csv(root / summary_file).set_index('direction', verify_integrity=True)
+    prefix = 'formal_topology_edge_export/'
+    with zipfile.ZipFile(root / archive) as bundle:
+        metadata = json.loads(bundle.read(prefix + 'formal_split_feature_manifest.json'))
+        for direction in ['HMP2_to_PRISM', 'PRISM_to_HMP2']:
+            fits = sorted((r for r in metadata if r['direction'] == direction), key=lambda r: r['split'])
+            require([r['split'] for r in fits] == list(range(1, 11)), 'Incomplete feature order')
+            mapped_edges = []
+            for r in fits:
+                names = r['selected_feature_ids']
+                filename = f"{prefix}edge_lists/{direction}/split_{r['split']:02d}/real_spearman.csv"
+                with bundle.open(filename) as source:
+                    directed = {(int(e['source']), int(e['target']))
+                                for e in csv.DictReader(io.TextIOWrapper(source, encoding='utf-8'))}
+                require(len(directed) == 8 * len(names) and all(i != j for i, j in directed)
+                        and len(names) == len(set(names)), 'Invalid directed Spearman input')
+                mapped_edges.append((directed, {(names[i], names[j]) for i, j in directed}))
+            for ix, field in enumerate(['local_mean', 'taxon_mean']):
+                values = [len(a[ix] & b[ix]) / len(a[ix] | b[ix])
+                          for a, b in itertools.combinations(mapped_edges, 2)]
+                row = summary.loc[direction]
+                require(len(values) == int(row.n_pairs) == 45 and
+                        abs(sum(values)/len(values) - row[field]) < 1e-12,
+                        f'Edge pairs disagree with {field} in {direction}')
+                if field == 'taxon_mean':
+                    require(abs(min(values) - row.taxon_min) < 1e-12 and
+                            abs(max(values) - row.taxon_max) < 1e-12,
+                            'Taxon-aligned overlap range mismatch')
+
+
+def check_record_scores(root, objects, primary, xgboost):
+    filename = 'manuscript/source_data/record_scores_by_fit.csv'
+    for display in ['Table3', 'SuppTable6', 'SuppFigureS2']:
+        require(filename in objects[display], f'{display} must reference the archived record scores')
+    scores = pd.read_csv(root / filename)
+    models = {'no_prior_gat','random_forest','elastic_net','capacity_matched_no_message_passing','xgboost'}
+    require(len(scores) == 100 and set(scores.model) == models and
+            not scores.duplicated(['direction','model','split']).any(), 'Wrong record-score file')
+    combined = pd.concat([primary, xgboost])
+    metrics = ['roc_auc', 'average_precision', 'brier']
+    require(scores[metrics].apply(lambda col: col.between(0, 1).all()).all(), 'Invalid recorded scores')
+    for direction, n_records, n_people in [('HMP2_to_PRISM',220,220),('PRISM_to_HMP2',1626,130)]:
+        subset = scores[scores.direction == direction]
+        require(subset.n_target_records.eq(n_records).all() and subset.n_target_participants.eq(n_people).all()
+                and all(set(g.split) == set(range(1,11)) for _,g in subset.groupby('model')),
+                'Missing source fits or wrong panel')
+        selector = ((combined.direction == direction) & (combined.target_stratum == 'pooled') &
+                    (combined.analysis_level == 'visit'))
+        common = combined[selector].set_index(['reference','metric'], verify_integrity=True)
+        absolute = subset.groupby('model')[metrics].mean()
+        for name in models - {'no_prior_gat'}:
+            for metric in metrics:
+                difference = absolute.loc['no_prior_gat',metric] - absolute.loc[name,metric]
+                require(abs(difference - common.loc[(name,metric),'split_mean_point_delta']) < 1e-12,
+                        f'Incorrect pooled record score for {direction} / {name} / {metric}')
+
 
 def check_selector_controls(data):
     sums = {'null_control': 30, 'batch_only': 27, 'signal_only': 20,
@@ -163,7 +228,17 @@ def main():
     f3 = pd.read_csv(root / 'manuscript/source_data/Figure3_repeated_leakage.csv')
     require(len(f3) == 10 and abs(f3.random_split_subject_overlap.mean() - 43) < 1e-9, 'Figure 3 seed or overlap mismatch')
     objects = {r['display_id']: r['source_object'].split(';') for r in rows}
-    check_box1(root, objects)
+    check_decision_table(root, objects)
+    check_taxon_alignment(root, objects)
+    check_record_scores(root, objects, primary, xgboost)
+    for display, filename in [('SuppTable14','pooled_auroc_components.csv'),
+                              ('SuppTable15','participant_brier_components.csv')]:
+        require(objects[display] == ['manuscript/source_data/' + filename,
+                'results/p0_rechecked_20261117/primary_common_draw_summary.csv',
+                'scripts/decompose_fixed_predictions.py'], f'{display} source mapping mismatch')
+    subprocess.run([sys.executable, str(root / 'scripts/decompose_fixed_predictions.py'), '--check',
+                    '--table-dir', str(root / 'manuscript/source_data'), '--summary',
+                    str(root / 'results/p0_rechecked_20261117/primary_common_draw_summary.csv')], check=True)
     paired_s9 = 'results/reconciled_evidence/identity_aware_topology/paired_split_contrasts.csv'
     require(paired_s9 in objects['SuppTable9'], 'Missing stored taxon-embedding fit contrasts for Table S9')
     pairs = pd.read_csv(root / paired_s9)
@@ -179,7 +254,7 @@ def main():
             'S12 requires the Figure 5 sources and the primary paired Brier summary')
     selector_source = 'manuscript/source_data/supplementary_figure1_selector.csv'
     sensitivity_source = 'manuscript/source_data/hmp2_collection_sensitivity.csv'
-    require(objects['SuppFigureS1'] == [selector_source], 'S1 must reference the 40-variable selector experiment')
+    require(objects['SuppFigureS1'] == [selector_source, 'manuscript/figures/FigureS1_selector.png'], 'S1 must reference the 40-variable selector experiment')
     require(objects['SuppTable13'] == [sensitivity_source], 'S13 must reference the collection sensitivity analysis')
     check_selector_controls(pd.read_csv(root / selector_source))
     check_brier_and_sensitivity(pd.read_csv(root / s12_sources[0]), primary, pd.read_csv(root / sensitivity_source))
@@ -208,8 +283,8 @@ def main():
         actual = (row.n_target_records, row.n_target_participants, row.auroc_observed_mean,
                   row.average_precision_observed_mean, row.brier_observed_mean)
         require(actual == expected[(row.source,row.target)] and row.n_source_ensembles == 10 and row.scoring_unit == 'record', 'S11 observed summaries or panel mismatch')
-    print(f'PASS: {len(rows)} current display entries; Box 1 decisions, S1 selector truth, S12 paired Brier and S13 scoring rules checked')
-    print('LIMIT: summaries do not reproduce bootstrap draws or certify access to excluded individual predictions')
+    print(f'PASS: {len(rows)} current display entries; Table 4 decisions, pooled fit scores, formal edge overlaps, selector truth, S12–S15 checked')
+    print('Intervals refer to shared target-participant draws for the ten fixed source fits.')
 
 if __name__ == '__main__':
     main()

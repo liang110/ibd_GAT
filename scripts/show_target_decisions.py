@@ -1,4 +1,4 @@
-"""Print the ten archived GAT-minus-random-forest contrasts in manuscript Box 1."""
+"""Print the ten archived GAT-minus-random-forest contrasts in manuscript Table 4."""
 
 import argparse
 import csv

@@ -8,6 +8,10 @@ From the repository root:
 
 ```bash
 PYTHONPATH=src python -m pytest -q
+python repro/audits/validate_current_manuscript_index.py --root .
+python scripts/decompose_fixed_predictions.py --check
+
+# Checks for archived release components
 python repro/validate_package.py
 python repro/audits/validate_truth_acceptance.py --ledger results/reconciled_evidence/truth_acceptance/per_seed_acceptance.csv
 python repro/audits/validate_evidence_registry.py --root .
