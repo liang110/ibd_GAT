@@ -2,7 +2,7 @@
 
 This framework links four features of IBD microbiome cohorts to classifier comparison. Abundance scale and reported taxa define comparable inputs. Repeated sampling determines the scoring unit, and recruitment defines the target population. Keeping external predictions fixed, a reader can compare fitted procedures for a specified population, unit and metric.
 
-The [framework diagram](manuscript/figures/Figure1_population_benchmark.png) shows how source-only fitting leads to these decisions. The [display index](manuscript/registry/figure_table_source_registry_20261117.csv) maps the six main figures, four main tables, two supplementary figures and fifteen supplementary tables to their sources. The section drafts and dated plotting files document earlier versions.
+The [framework diagram](manuscript/figures/Figure1_population_benchmark.png) shows how source-only fitting leads to these decisions. The [display index](manuscript/registry/figure_table_source_registry_20261117.csv) maps the six main figures, four main tables, three supplementary figures and fifteen supplementary tables to their sources. The section drafts and dated plotting files document earlier versions.
 
 ## Run the scoring example
 
@@ -17,11 +17,17 @@ The first command writes 18 comparisons to a fresh output path. The second compa
 
 ## Read the model comparison
 
-To print the ten study comparisons in Table 4, *Graph attention versus random forest by target population, scoring unit and metric*, run `python scripts/show_target_decisions.py`. The command reads the archived GAT and random forest results for five target settings. Each row gives the observed difference, its pointwise 95% target-participant interval and the procedure favoured for AUROC or Brier. These intervals condition on the ten source fits. A comparison is unresolved when its interval includes zero. The synthetic example above illustrates the same scoring questions using fictional participants.
+[Figure 5](manuscript/figures/Figure5_target_decisions.png) and Table 4 compare graph attention (GAT) with random forest (RF) for five target settings. Panels a and b show the observed mean differences over ten fixed fits and pointwise 95% intervals from 5,000 shared target-participant draws. Among the 65 Netherlands participants, GAT had lower Brier error (difference −0.0287, interval −0.0511 to −0.0058). The AUROC difference was +0.0702 (−0.0289 to +0.1736), leaving the ranking comparison open. In HMP2, RF had higher AUROC at both record and participant level.
 
-[Figure 5 and Supplementary Table 12](manuscript/source_data/figure5_model_comparison.csv) compare five fitted procedures in four settings. Rows give the ten-fit observed means and source-fit SDs for AUROC, average precision and Brier score. The paired columns give the observed mean GAT-minus-reference AUROC difference, its bootstrap mean (the Figure 5 marker) and the percentile interval from 5,000 target-participant draws shared across the ten fixed fits. The GAT row has no self-contrast. [Ten paired GAT/RF fits per setting](manuscript/source_data/figure5_gat_rf_by_fit.csv) show variation over source fits.
+Panel c partitions the pooled Franzosa AUROC difference of +0.09932 into +0.05336 from within-group pairs and +0.04596 from cross-group pairs. Panel d follows the observed HMP2 Brier difference as the scoring rule changes: −0.00609 for equal records, +0.00489 for equal people with separate record losses, and +0.00862 for one mean probability per person. The two endpoint intervals both include zero (panel b). The [pair contributions](manuscript/source_data/pooled_auroc_components.csv) and [Brier components](manuscript/source_data/participant_brier_components.csv) also supply Supplementary Tables 14 and 15.
 
-For example, GAT and random forest trained on HMP2 have observed mean AUROCs of 0.8318 and 0.7616 in the 65-person Netherlands validation group. Their observed paired difference is +0.0702. The conditional 95% interval, −0.0289 to +0.1736, includes a lead for either procedure in that group. The same fits scored on the 155-person PRISM discovery group give +0.1030 [0.0487, 0.1590]. With HMP2 as target, one score per person is the average of all their available record probabilities.
+```bash
+python scripts/show_target_decisions.py
+python -m pip install matplotlib
+python scripts/plot_target_decisions.py --root . --output-dir figures_out
+```
+
+The display command prints all ten Table 4 comparisons. With Matplotlib installed, the plotting command writes Figure 5 as a PNG and a vector PDF from the three aggregate source tables. [Supplementary Figure 3](manuscript/figures/FigureS3_stratified_auroc.png) shows the four GAT–reference AUROC contrasts across recruitment groups and scoring units. Its points are bootstrap means, as in Figure 4. The [underlying summaries](manuscript/source_data/figure5_model_comparison.csv) also give the observed scores and fit SDs in Supplementary Table 12. The following commands check and export those data.
 
 ```bash
 python scripts/figure5_model_comparison.py --check
@@ -31,8 +37,6 @@ python scripts/figure5_model_comparison.py --output absolute_scores_and_auroc_co
 These commands export the absolute scores and paired AUROC results. The [joint-draw table](results/p0_rechecked_20261117/primary_common_draw_summary.csv) supplies the additional paired Brier comparisons in Supplementary Table 12. These commands use the published aggregate tables and Python's standard library. Use a new filename for the export. To find any main or supplementary display, see the [manuscript source index](manuscript/registry/figure_table_source_registry_20261117.csv). [Supplementary Table 11](manuscript/source_data/siamcat_observed_reference.csv) reports the observed scores of a separate native SIAMCAT LASSO reference, with 385 HMP2 records from 105 people. This microbial input contains the eligible HMP2 profile IDs that also occurred in the metabolomics list. The [50 seed-level selector results](manuscript/source_data/supplementary_figure1_selector.csv) supply Supplementary Figure 1.
 
 The [pooled record scores by source fit](manuscript/source_data/record_scores_by_fit.csv) reproduce Table 3 across all five procedures, the GAT and MLP summaries in Supplementary Table 6, and their fit-specific scores in [Supplementary Figure 2](manuscript/figures/FigureS2_gat_mlp.png). The table scores the archived primary predictions and includes the archived record scores for XGBoost. For paired intervals, use the joint-draw table above.
-
-Two decompositions explain changes in the observed GAT-minus-RF difference. Within-group and between-group case–control pairs contribute +0.0534 and +0.0460 to pooled Franzosa AUROC ([Supplementary Table 14](manuscript/source_data/pooled_auroc_components.csv)). On HMP2, the Brier difference is −0.00609 when profiles carry equal weight, +0.00489 when people carry equal weight within the mean profile loss, and +0.00862 when each person's mean probability is scored ([Supplementary Table 15](manuscript/source_data/participant_brier_components.csv)).
 
 ```bash
 python scripts/decompose_fixed_predictions.py --check

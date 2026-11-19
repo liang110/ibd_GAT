@@ -12,7 +12,7 @@ from pathlib import Path
 
 import pandas as pd
 
-EXPECTED = {f'Figure{i}' for i in (1, 2, 3, 4, 6)} | {'Figure5a', 'Figure5b'} | {f'Table{i}' for i in range(1, 5)} | {f'SuppTable{i}' for i in range(1, 16)} | {'SuppFigureS1', 'SuppFigureS2'}
+EXPECTED = {f'Figure{i}' for i in (1, 2, 3, 4, 6)} | {'Figure5a', 'Figure5b', 'Figure5c', 'Figure5d'} | {f'Table{i}' for i in range(1, 5)} | {f'SuppTable{i}' for i in range(1, 16)} | {'SuppFigureS1', 'SuppFigureS2', 'SuppFigureS3'}
 
 def require(test, message):
     if not test:
@@ -219,10 +219,10 @@ def main():
             require(len(pooled) == (9 if label == 'primary' else 3), f'Figure 4 {label} reference coverage mismatch for {direction}')
         for stratum in ('discovery', 'validation'):
             selection = data[(data.direction == 'HMP2_to_PRISM') & (data.target_stratum == stratum) & (data.analysis_level == 'visit') & (data.metric == 'roc_auc')]
-            require(len(selection) == (3 if label == 'primary' else 1), f'Figure 5a {label} coverage mismatch for {stratum}')
+            require(len(selection) == (3 if label == 'primary' else 1), f'Supplementary Figure 3a {label} coverage mismatch for {stratum}')
         for level in ('visit', 'participant'):
             selection = data[(data.direction == 'PRISM_to_HMP2') & (data.target_stratum == 'pooled') & (data.analysis_level == level) & (data.metric == 'roc_auc')]
-            require(len(selection) == (3 if label == 'primary' else 1), f'Figure 5b {label} coverage mismatch for {level}')
+            require(len(selection) == (3 if label == 'primary' else 1), f'Supplementary Figure 3b {label} coverage mismatch for {level}')
     row = primary[(primary.direction == 'HMP2_to_PRISM') & (primary.target_stratum == 'pooled') & (primary.analysis_level == 'visit') & (primary.reference == 'random_forest') & (primary.metric == 'roc_auc')]
     require(len(row) == 1 and abs(row.iloc[0].common_draw_bootstrap_mean - .0991) < .00006, 'primary pooled GAT–RF contrast mismatch')
     f3 = pd.read_csv(root / 'manuscript/source_data/Figure3_repeated_leakage.csv')
@@ -248,10 +248,18 @@ def main():
             and (pairs.real_auroc - pairs.rewired_auroc - pairs.real_minus_rewired).abs().lt(1e-12).all(),
             'Incorrect Table S9 identity-aware paired source fits')
     s12_sources = ['manuscript/source_data/figure5_model_comparison.csv', 'manuscript/source_data/figure5_gat_rf_by_fit.csv']
-    for label in ['Figure5a', 'Figure5b']:
-        require(objects[label] == s12_sources, f'{label} must reference the common Figure 5/S12 sources')
-    require(objects['SuppTable12'] == s12_sources + ['results/p0_rechecked_20261117/primary_common_draw_summary.csv'],
-            'S12 requires the Figure 5 sources and the primary paired Brier summary')
+    common_draws = 'results/p0_rechecked_20261117/primary_common_draw_summary.csv'
+    plot = 'scripts/plot_target_decisions.py'
+    figure = 'manuscript/figures/Figure5_target_decisions.png'
+    for panel, source in [('a', common_draws), ('b', common_draws),
+                          ('c', 'manuscript/source_data/pooled_auroc_components.csv'),
+                          ('d', 'manuscript/source_data/participant_brier_components.csv')]:
+        require(objects['Figure5' + panel] == [source, plot, figure],
+                f'Figure 5{panel} must reference its current source and rendering script')
+    require(objects['SuppFigureS3'] == [s12_sources[0], 'manuscript/figures/FigureS3_stratified_auroc.png'],
+            'Supplementary Figure 3 must reference the stratified four-model AUROC comparisons')
+    require(objects['SuppTable12'] == s12_sources + [common_draws],
+            'S12 requires the stratified AUROC sources and the primary paired Brier summary')
     selector_source = 'manuscript/source_data/supplementary_figure1_selector.csv'
     sensitivity_source = 'manuscript/source_data/hmp2_collection_sensitivity.csv'
     require(objects['SuppFigureS1'] == [selector_source, 'manuscript/figures/FigureS1_selector.png'], 'S1 must reference the 40-variable selector experiment')

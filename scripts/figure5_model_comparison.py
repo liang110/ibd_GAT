@@ -1,4 +1,4 @@
-"""Assemble Table S12 and Figure 5 from the released observed and bootstrap summaries."""
+"""Assemble Supplementary Table 12 and Supplementary Figure 3 from the released observed and bootstrap summaries."""
 import argparse
 import csv
 from pathlib import Path
