@@ -2,11 +2,13 @@
 """Check paths and key scientific identity in the current manuscript index."""
 import argparse
 import csv
+import subprocess
+import sys
 from pathlib import Path
 
 import pandas as pd
 
-EXPECTED = {f'Figure{i}' for i in (1, 2, 3, 4, 6, 7)} | {'Figure5a', 'Figure5b'} | {f'Table{i}' for i in range(1, 5)} | {f'SuppTable{i}' for i in range(1, 11)} | {'SuppFigureS1'}
+EXPECTED = {f'Figure{i}' for i in (1, 2, 3, 4, 6, 7)} | {'Figure5a', 'Figure5b'} | {f'Table{i}' for i in range(1, 5)} | {f'SuppTable{i}' for i in range(1, 13)} | {'SuppFigureS1'}
 
 def require(test, message):
     if not test:
@@ -69,6 +71,35 @@ def main():
     require(len(row) == 1 and abs(row.iloc[0].common_draw_bootstrap_mean - .0991) < .00006, 'primary pooled GAT–RF contrast mismatch')
     f3 = pd.read_csv(root / 'manuscript/source_data/Figure3_repeated_leakage.csv')
     require(len(f3) == 10 and abs(f3.random_split_subject_overlap.mean() - 43) < 1e-9, 'Figure 3 seed or overlap mismatch')
+    objects = {r['display_id']: r['source_object'].split(';') for r in rows}
+    s12_sources = ['manuscript/source_data/figure5_model_comparison.csv', 'manuscript/source_data/figure5_gat_rf_by_fit.csv']
+    for label in ['Figure5a', 'Figure5b', 'SuppTable12']:
+        require(objects[label] == s12_sources, f'{label} must reference the common Figure 5/S12 sources')
+    subprocess.run([sys.executable, str(root / 'scripts/figure5_model_comparison.py'),
+                    '--root', str(root), '--check'], check=True)
+    summary = pd.read_csv(root / s12_sources[0]).query("model == 'Random forest'")
+    fits = pd.read_csv(root / s12_sources[1])
+    keys = ['source', 'target', 'scoring_unit']
+    require(len(fits) == 40 and not fits.duplicated(keys + ['source_fit']).any(), 'Invalid source-fit table dimensions')
+    require(((fits.gat_auroc - fits.rf_auroc - fits.gat_minus_rf_observed).abs() < 1e-12).all(), 'Incorrect fit differences')
+    for row in summary.itertuples():
+        group = fits[(fits.source == row.source) & (fits.target == row.target) & (fits.scoring_unit == row.scoring_unit)]
+        require(set(group.source_fit) == set(range(1, 11)), 'Matched fits 1 through 10 required')
+        require(abs(group.gat_minus_rf_observed.mean() - row.gat_minus_model_observed) < 1e-12, 'Fit and summary contrasts disagree')
+    s11 = 'manuscript/source_data/siamcat_observed_reference.csv'
+    require(objects['SuppTable11'] == [s11], 'S11 must reference the native observed reference')
+    reference = pd.read_csv(root / s11)
+    expected = {
+        ('HMP2','Franzosa'): (220,220,.672147,.854972,.345883),
+        ('Franzosa','HMP2'): (385,105,.736230,.872359,.198338),
+        ('HMP2','NielsenHB_2014'): (396,318,.667262,.610132,.351597),
+        ('Franzosa','NielsenHB_2014'): (396,318,.608827,.522080,.342822),
+    }
+    require(len(reference) == 4 and set(zip(reference.source, reference.target)) == set(expected), 'Wrong S11 panels')
+    for row in reference.itertuples():
+        actual = (row.n_target_records, row.n_target_participants, row.auroc_observed_mean,
+                  row.average_precision_observed_mean, row.brier_observed_mean)
+        require(actual == expected[(row.source,row.target)] and row.n_source_ensembles == 10 and row.scoring_unit == 'record', 'S11 observed summaries or panel mismatch')
     print(f'PASS: {len(rows)} current display entries; paths, estimands, key contrasts and Figure 3 checked')
     print('LIMIT: summaries do not reproduce bootstrap draws or certify access to excluded individual predictions')
 

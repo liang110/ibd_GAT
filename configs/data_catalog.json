@@ -12,6 +12,27 @@
       "metadata": "prism_metadata_clean.csv"
     }
   },
-  "status": "legacy_unharmonized"
+  "publication_inputs": {
+    "prepare": "scripts/prepare_published_profiles.py",
+    "HMP2_MGX_taxonomy": {
+      "file": "taxonomic_profiles_3.tsv.gz",
+      "source": "https://g-227ca.190ebd.75bc.data.globus.org/ibdmdb/products/HMP2/MGX/2018-05-04/taxonomic_profiles_3.tsv.gz",
+      "sha256": "d790ff15e46d61ca0cadc55d9f918de4e3415d7f97c992ac37610aaee02117ed"
+    },
+    "HMP2_metadata": {
+      "file": "hmp2_metadata_2018-08-20.csv",
+      "source": "https://g-227ca.190ebd.75bc.data.globus.org/ibdmdb/metadata/hmp2_metadata_2018-08-20.csv",
+      "sha256": "656b7bd97660ddb875548805e30bede31f2d1208293f7170d2d5755e33862ec9"
+    },
+    "Franzosa_Dataset4": {
+      "file": "41564_2018_306_MOESM6_ESM.xlsx",
+      "source": "https://www.nature.com/articles/s41564-018-0306-4#Sec35",
+      "sheet": "dataset_s4",
+      "sha256": "9aa38fc392605263ae96240e260d61a017e55a0bf2473274faad89cd4ee12cbf"
+    },
+    "optional_HMP2_dysbiosis_scores": {
+      "source": "https://forum.biobakery.org/uploads/short-url/umwfR0kDJ6s5RXHwtIMgLaOEoOI.tsv",
+      "sha256": "eb4d55c9bdfece1cd53178fb961cd417063802225dd712af4666abb462372bc7"
+    }
+  }
 }
-

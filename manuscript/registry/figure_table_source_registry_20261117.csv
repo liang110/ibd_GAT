@@ -3,16 +3,16 @@ Figure1,manuscript/source_data/shared_feature_candidates_126.csv;repro/audits/tr
 Figure2,manuscript/source_data/Figure2_input_scale_audit.csv;manuscript/source_data/HMP2_PRISM_independence_audit.csv,record and participant denominators
 Figure3,manuscript/source_data/Figure3_repeated_leakage.csv;results/p0_rechecked_20261117/known_truth_acceptance_summary.csv,ten seeds; one implanted clinical field
 Figure4,results/p0_rechecked_20261117/primary_common_draw_summary.csv;results/p0_rechecked_20261117/xgboost_paired_common_draw.csv,paired common-target bootstrap; record scores
-Figure5a,results/p0_rechecked_20261117/primary_common_draw_summary.csv;results/p0_rechecked_20261117/xgboost_paired_common_draw.csv,target provenance strata
-Figure5b,results/p0_rechecked_20261117/primary_common_draw_summary.csv;results/p0_rechecked_20261117/xgboost_paired_common_draw.csv,record and participant scoring
+Figure5a,manuscript/source_data/figure5_model_comparison.csv;manuscript/source_data/figure5_gat_rf_by_fit.csv,fixed fits; paired bootstrap means and conditional intervals; S12 also gives observed absolute scores and paired contrasts
+Figure5b,manuscript/source_data/figure5_model_comparison.csv;manuscript/source_data/figure5_gat_rf_by_fit.csv,fixed fits; paired bootstrap means and conditional intervals; S12 also gives observed absolute scores and paired contrasts
 Figure6,results/p0_rechecked_20261117/topology_intervention_paired.csv;results/p0_rechecked_20261117/topology_taxon_aligned_summary.csv;results/reconciled_evidence/topology_contract_freeze_20261117/edge_ablation_metrics.csv,full-batch intervention; taxon-aligned edges
 Figure7,results/reconciled_evidence/paired_bootstrap_reconciled_by_split.csv;results/p0_rechecked_20261117/primary_common_draw_summary.csv,partial: pooled absolute values require restricted predictions
-Table1,manuscript/source_data/HMP2_PRISM_independence_audit.csv;manuscript/source_data/Figure2_input_scale_audit.csv,partial: participant-visit crosswalk not redistributed
+Table1,manuscript/source_data/HMP2_PRISM_independence_audit.csv;manuscript/source_data/Figure2_input_scale_audit.csv;scripts/prepare_published_profiles.py,rebuild study matrices and sample-level manifests from the indicated public releases; read-depth and shared-taxon denominators
 Table2,manuscript/source_data/Figure3_repeated_leakage.csv;results/p0_rechecked_20261117/known_truth_acceptance_summary.csv,ten seeds; one planted clinical field
 Table3,results/reconciled_evidence/paired_bootstrap_reconciled_by_split.csv;results/p0_rechecked_20261117/xgboost_metrics_by_scoring_unit.csv,partial: pooled absolute values require restricted predictions
 Table4,results/reconciled_evidence/paired_bootstrap_reconciled_by_split.csv;results/p0_rechecked_20261117/primary_common_draw_summary.csv,partial: pooled absolute values require restricted predictions
 SuppFigureS1,results/reconciled_evidence/truth_acceptance/per_seed_acceptance.csv;results/reconciled_evidence/synthetic_truth_summary.csv,partial: selector-only synthetic experiment; per-seed batch-candidate plot coordinates not completely provided
-SuppTable1,manuscript/source_data/HMP2_PRISM_independence_audit.csv;manuscript/source_data/shared_feature_candidates_126.csv,partial: participant-visit crosswalk not redistributed
+SuppTable1,manuscript/source_data/HMP2_PRISM_independence_audit.csv;manuscript/source_data/shared_feature_candidates_126.csv;scripts/prepare_published_profiles.py,keyed study sample and participant-visit counts; optional comparison to published dysbiosis sample IDs
 SuppTable2,results/p0_rechecked_20261117/known_truth_acceptance_summary.csv;manuscript/source_data/Figure3_repeated_leakage.csv,ten seeds
 SuppTable3,results/p0_rechecked_20261117/prism_direct_transfer_metrics.csv,direct provenance transfer; absolute metrics
 SuppTable4,repro/audits/training_configuration.json;scripts/run_capacity_control.py;scripts/run_no_prior_gat_transfer.py,configuration audit and source implementations; primary minibatch versus independent full-batch experiments
@@ -21,4 +21,6 @@ SuppTable6,results/reconciled_evidence/paired_bootstrap_reconciled_by_split.csv;
 SuppTable7,results/p0_rechecked_20261117/xgboost_metrics_by_scoring_unit.csv;results/p0_rechecked_20261117/xgboost_paired_common_draw.csv,XGBoost external performance and contrasts
 SuppTable8,results/p0_rechecked_20261117/prism_direct_transfer_paired.csv,5000 common target draws; average ten fixed source fits within each draw
 SuppTable9,results/reconciled_evidence/topology_contract_freeze_20261117/edge_ablation_metrics.csv;results/reconciled_evidence/identity_aware_topology/paired_split_contrasts.csv,two independent full-batch experiments
-SuppTable10,results/reconciled_evidence/absolute_performance_summary.csv,partial: reverse GAT metrics; baseline derived from manuscript denominators
+SuppTable10,results/p0_rechecked_20261117/xgboost_metrics_by_scoring_unit.csv;results/p0_rechecked_20261117/primary_common_draw_summary.csv,GAT Brier by scoring unit; full-source constant from reported source and target class counts
+SuppTable11,manuscript/source_data/siamcat_observed_reference.csv,native SIAMCAT LASSO reference on its own panels; mean of ten observed ensemble scores per metric
+SuppTable12,manuscript/source_data/figure5_model_comparison.csv;manuscript/source_data/figure5_gat_rf_by_fit.csv,five fitting procedures across four target settings; ten matched fits per setting; GAT minus reference

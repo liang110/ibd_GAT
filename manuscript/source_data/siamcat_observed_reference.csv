@@ -1,0 +1,5 @@
+source,target,scoring_unit,n_target_records,n_target_participants,n_source_ensembles,auroc_observed_mean,average_precision_observed_mean,brier_observed_mean
+HMP2,Franzosa,record,220,220,10,0.672147,0.854972,0.345883
+Franzosa,HMP2,record,385,105,10,0.73623,0.872359,0.198338
+HMP2,NielsenHB_2014,record,396,318,10,0.667262,0.610132,0.351597
+Franzosa,NielsenHB_2014,record,396,318,10,0.608827,0.52208,0.342822

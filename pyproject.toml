@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "ibd-microbiome-framework"
 version = "0.1.0"
-description = "Confound-aware and portability-aware IBD multi-omics analysis"
+description = "Cross-cohort evaluation of microbiome classifiers across IBD recruitment groups and scoring units"
 requires-python = ">=3.10"
 dependencies = [
   "numpy>=1.26",
@@ -16,6 +16,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+input = ["openpyxl>=3.1"]
 model = ["xgboost>=2.0", "torch>=2.2", "torch-geometric>=2.5"]
 third-cohort = ["rdata>=1.0", "xarray>=2024.1"]
 dev = ["pytest>=8.0", "ruff>=0.5", "mypy>=1.10"]
