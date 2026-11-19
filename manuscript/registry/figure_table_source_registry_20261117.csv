@@ -11,7 +11,7 @@ Table1,manuscript/source_data/HMP2_PRISM_independence_audit.csv;manuscript/sourc
 Table2,manuscript/source_data/Figure3_repeated_leakage.csv;results/p0_rechecked_20261117/known_truth_acceptance_summary.csv,ten seeds; one planted clinical field
 Table3,results/reconciled_evidence/paired_bootstrap_reconciled_by_split.csv;results/p0_rechecked_20261117/xgboost_metrics_by_scoring_unit.csv,partial: pooled absolute values require restricted predictions
 Table4,results/reconciled_evidence/paired_bootstrap_reconciled_by_split.csv;results/p0_rechecked_20261117/primary_common_draw_summary.csv,partial: pooled absolute values require restricted predictions
-SuppFigureS1,results/reconciled_evidence/truth_acceptance/per_seed_acceptance.csv;results/reconciled_evidence/synthetic_truth_summary.csv,partial: selector-only synthetic experiment; per-seed batch-candidate plot coordinates not completely provided
+SuppFigureS1,manuscript/source_data/supplementary_figure1_selector.csv,selector-only experiment; 40 candidate variables; 20 selected per seed; 50 scenario and seed combinations
 SuppTable1,manuscript/source_data/HMP2_PRISM_independence_audit.csv;manuscript/source_data/shared_feature_candidates_126.csv;scripts/prepare_published_profiles.py,keyed study sample and participant-visit counts; optional comparison to published dysbiosis sample IDs
 SuppTable2,results/p0_rechecked_20261117/known_truth_acceptance_summary.csv;manuscript/source_data/Figure3_repeated_leakage.csv,ten seeds
 SuppTable3,results/p0_rechecked_20261117/prism_direct_transfer_metrics.csv,direct provenance transfer; absolute metrics
@@ -23,4 +23,5 @@ SuppTable8,results/p0_rechecked_20261117/prism_direct_transfer_paired.csv,5000 c
 SuppTable9,results/reconciled_evidence/topology_contract_freeze_20261117/edge_ablation_metrics.csv;results/reconciled_evidence/identity_aware_topology/paired_split_contrasts.csv,two independent full-batch experiments
 SuppTable10,results/p0_rechecked_20261117/xgboost_metrics_by_scoring_unit.csv;results/p0_rechecked_20261117/primary_common_draw_summary.csv,GAT Brier by scoring unit; full-source constant from reported source and target class counts
 SuppTable11,manuscript/source_data/siamcat_observed_reference.csv,native SIAMCAT LASSO reference on its own panels; mean of ten observed ensemble scores per metric
-SuppTable12,manuscript/source_data/figure5_model_comparison.csv;manuscript/source_data/figure5_gat_rf_by_fit.csv,five fitting procedures across four target settings; ten matched fits per setting; GAT minus reference
+SuppTable12,manuscript/source_data/figure5_model_comparison.csv;manuscript/source_data/figure5_gat_rf_by_fit.csv;results/p0_rechecked_20261117/primary_common_draw_summary.csv,five procedures across four target settings; ten matched fits; HMP2 record and participant paired Brier contrasts
+SuppTable13,manuscript/source_data/hmp2_collection_sensitivity.csv,HMP2 target depth and collection weighting; two panels and three scoring rules; paired target-participant draws for fixed source fits

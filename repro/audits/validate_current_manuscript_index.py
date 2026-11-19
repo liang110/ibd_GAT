@@ -8,11 +8,75 @@ from pathlib import Path
 
 import pandas as pd
 
-EXPECTED = {f'Figure{i}' for i in (1, 2, 3, 4, 6, 7)} | {'Figure5a', 'Figure5b'} | {f'Table{i}' for i in range(1, 5)} | {f'SuppTable{i}' for i in range(1, 13)} | {'SuppFigureS1'}
+EXPECTED = {f'Figure{i}' for i in (1, 2, 3, 4, 6, 7)} | {'Figure5a', 'Figure5b'} | {f'Table{i}' for i in range(1, 5)} | {f'SuppTable{i}' for i in range(1, 14)} | {'SuppFigureS1'}
 
 def require(test, message):
     if not test:
         raise ValueError(message)
+
+
+def check_selector_controls(data):
+    sums = {'null_control': 30, 'batch_only': 27, 'signal_only': 20,
+            'signal_reversing_batch': 6, 'signal_topology_shift': 20}
+    require(len(data) == 50 and set(data.scenario) == set(sums), 'S1 scenario coverage mismatch')
+    require(data.candidate_variables.eq(40).all() and data.selected_variables.eq(20).all()
+            and data.designated_batch_variables.eq(6).all(), 'S1 candidate set or selector budget mismatch')
+    for scenario, rows in data.groupby('scenario'):
+        require(set(rows.seed) == set(range(20260815, 20260825)) and len(rows) == 10,
+                f'S1 seed coverage mismatch for {scenario}')
+        planted = 6 if scenario.startswith('signal_') else 0
+        require(rows.implanted_disease_variables.eq(planted).all(), f'S1 disease truth mismatch: {scenario}')
+        if planted:
+            require(rows.recovered_disease_variables.eq(6).all() and rows.disease_recall.eq(1).all()
+                    and rows.expected_disease_hits_uniform_selection.eq(3).all(), 'S1 positive truth mismatch')
+        else:
+            require(rows[['recovered_disease_variables', 'disease_recall', 'expected_disease_hits_uniform_selection']]
+                    .isna().all().all(), 'S1 no-signal disease quantities must be undefined')
+        require(rows.selected_batch_variables.isin(range(7)).all()
+                and rows.selected_batch_variables.sum() == sums[scenario]
+                and (rows.selected_batch_variables / 6 - rows.batch_candidate_fraction).abs().lt(1e-12).all(),
+                f'S1 batch selection mismatch: {scenario}')
+
+
+def check_brier_and_sensitivity(absolute, primary, sensitivity):
+    reverse = primary.query("direction == 'PRISM_to_HMP2' and target_stratum == 'pooled'"
+                            " and candidate == 'no_prior_gat' and reference == 'random_forest'")
+    brier = reverse.query("metric == 'brier'").set_index('analysis_level', verify_integrity=True)
+    reported = {'visit': (-.0061, -.0059, -.0320, .0174), 'participant': (.0086, .0085, -.0119, .0272)}
+    require(set(brier.index) == set(reported), 'S12 Brier analysis levels mismatch')
+    for key, expected in reported.items():
+        s12 = absolute[(absolute.target == 'HMP2') & (absolute.scoring_unit == ('record' if key == 'visit' else key))]
+        means = s12.set_index('model', verify_integrity=True).brier_mean
+        row = brier.loc[key]
+        cols = ['split_mean_point_delta', 'common_draw_bootstrap_mean', 'ci_low', 'ci_high']
+        require(tuple(round(float(row[c]), 4) for c in cols) == expected and row.n_bootstrap == 5000
+                and row.n_source_splits == 10 and row.n_target_participants == 130, 'S12 paired Brier mismatch')
+        require(abs(means['Graph attention'] - means['Random forest'] - row.split_mean_point_delta) < 1e-12,
+                'S12 observed Brier contrast and absolute scores disagree')
+    panels = {'all_eligible': (1626, 1584, 1199), 'published_1595': (1595, 1553, 1169)}
+    scores = ('record', 'person_profile_mean', 'person_collection_mean')
+    metrics = ('roc_auc', 'average_precision', 'brier')
+    s13 = sensitivity.set_index(['panel', 'scoring', 'metric'], verify_integrity=True)
+    require(set(s13.index) == {(p,s,m) for p in panels for s in scores for m in metrics},
+            'S13 must cover 2 panels, 3 scoring rules and all 3 metrics')
+    require(s13.people.eq(130).all() and s13.ibd_people.eq(103).all() and s13.fits.eq(10).all()
+            and s13.draws.eq(5000).all(), 'S13 participants, source fits or draw count mismatch')
+    require((s13.gat - s13.rf - s13.observed_delta).abs().lt(1e-12).all()
+            and s13.gat.between(0,1).all() and s13.rf.between(0,1).all()
+            and (s13.ci_lower <= s13.draw_mean).all() and (s13.draw_mean <= s13.ci_upper).all(),
+            'S13 absolute scores, contrasts or intervals disagree')
+    for panel, counts in panels.items():
+        subset = s13.loc[panel]
+        require(subset[['profiles','collections','ibd_profiles']].eq(counts).all().all(),
+                f'S13 record/collection counts incorrect for {panel}')
+    for rule, analysis_level in [('record','visit'),('person_profile_mean','participant')]:
+        for metric in metrics:
+            source = reverse[(reverse.analysis_level == analysis_level) & (reverse.metric == metric)]
+            require(len(source) == 1 and abs(s13.loc[('all_eligible', rule, metric), 'observed_delta']
+                    - source.iloc[0].split_mean_point_delta) < 1e-12, 'S13 anchor and primary observed scores differ')
+    require(s13.xs('roc_auc',level='metric').ci_upper.lt(0).all(), 'S13 AUROC interval changed sign')
+    r = s13.xs('brier',level='metric')
+    require(r.ci_lower.lt(0).all() and r.ci_upper.gt(0).all(), 'S13 Brier intervals must include zero')
 
 def main():
     parser = argparse.ArgumentParser()
@@ -73,8 +137,16 @@ def main():
     require(len(f3) == 10 and abs(f3.random_split_subject_overlap.mean() - 43) < 1e-9, 'Figure 3 seed or overlap mismatch')
     objects = {r['display_id']: r['source_object'].split(';') for r in rows}
     s12_sources = ['manuscript/source_data/figure5_model_comparison.csv', 'manuscript/source_data/figure5_gat_rf_by_fit.csv']
-    for label in ['Figure5a', 'Figure5b', 'SuppTable12']:
+    for label in ['Figure5a', 'Figure5b']:
         require(objects[label] == s12_sources, f'{label} must reference the common Figure 5/S12 sources')
+    require(objects['SuppTable12'] == s12_sources + ['results/p0_rechecked_20261117/primary_common_draw_summary.csv'],
+            'S12 requires the Figure 5 sources and the primary paired Brier summary')
+    selector_source = 'manuscript/source_data/supplementary_figure1_selector.csv'
+    sensitivity_source = 'manuscript/source_data/hmp2_collection_sensitivity.csv'
+    require(objects['SuppFigureS1'] == [selector_source], 'S1 must reference the 40-variable selector experiment')
+    require(objects['SuppTable13'] == [sensitivity_source], 'S13 must reference the collection sensitivity analysis')
+    check_selector_controls(pd.read_csv(root / selector_source))
+    check_brier_and_sensitivity(pd.read_csv(root / s12_sources[0]), primary, pd.read_csv(root / sensitivity_source))
     subprocess.run([sys.executable, str(root / 'scripts/figure5_model_comparison.py'),
                     '--root', str(root), '--check'], check=True)
     summary = pd.read_csv(root / s12_sources[0]).query("model == 'Random forest'")
@@ -100,7 +172,7 @@ def main():
         actual = (row.n_target_records, row.n_target_participants, row.auroc_observed_mean,
                   row.average_precision_observed_mean, row.brier_observed_mean)
         require(actual == expected[(row.source,row.target)] and row.n_source_ensembles == 10 and row.scoring_unit == 'record', 'S11 observed summaries or panel mismatch')
-    print(f'PASS: {len(rows)} current display entries; paths, estimands, key contrasts and Figure 3 checked')
+    print(f'PASS: {len(rows)} current display entries; key contrasts, S1 selector truth, S12 paired Brier and S13 scoring rules checked')
     print('LIMIT: summaries do not reproduce bootstrap draws or certify access to excluded individual predictions')
 
 if __name__ == '__main__':
