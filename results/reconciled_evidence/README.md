@@ -1,15 +1,12 @@
-# Reconciled evidence tables
+# Supporting analyses
 
-Compact machine-readable sources for the manuscript claims. These files contain summary statistics and audit metadata, not raw cohort matrices or participant identifiers.
+Use the [manuscript source index](../../manuscript/registry/figure_table_source_registry_20261117.csv) to locate the published estimate for a population, scoring unit and metric. The [paired study summaries](../p0_rechecked_20261117/README.md) describe the intervals from target participants resampled jointly across the ten fixed source fits.
 
-- `absolute_performance_summary.csv`: AUROC, average precision and Brier summaries across source splits.
-- `paired_bootstrap_reconciled_by_split.csv`: paired participant-draw contrasts with 5,000 draws per source split.
-- `topology_split_stability.csv`: split-level real-versus-rewired topology contrasts.
-- `identity_aware_topology/`: compact metrics and paired split contrasts for the identity-aware topology sensitivity analysis.
-- `prism_discovery_origin_sensitivity/`: compact metrics and summaries for the PRISM provenance-stratum sensitivity analysis.
-- `synthetic_truth_summary.csv` and `truth_acceptance/per_seed_acceptance.csv`: truth-panel summaries and per-seed acceptance records.
-- `topology_constraints/`: canonical formal audit tables, hashes, manifests and mismatch resolution.
-- `../../releases/formal_topology_edge_export_20261114.zip`: the 140 canonical edge lists and the complete edge-level audit payload.
+| Analysis | Data |
+| --- | --- |
+| Fixed-prediction performance | [Absolute scores](absolute_performance_summary.csv) by source, target and scoring unit |
+| Transfer between recruitment groups | [Discovery-to-validation and validation-to-discovery results](prism_discovery_validation_transfer/) |
+| Feature selection with known truth | [Acceptance rules and seed-level outcomes](truth_acceptance/) |
+| Graph input comparisons | [Formal run and constraint checks](topology_constraints/), [directed edge lists](../../releases/formal_topology_edge_export_20261114.zip) and [sensitivity to node identity](identity_aware_topology/) |
 
-Brier is lower-is-better. The figure/table registry identifies which source table supports each reported object.
-Unit convention: `paired_bootstrap_reconciled_by_split.csv` reports visit-scored contrasts with participant-cluster resampling.  The `common_draw` directory contains the formal shared-draw summary. Participant-level absolute metrics are stored separately in `absolute_performance_summary.csv`.
+`paired_bootstrap_reconciled_by_split.csv` gives separate intervals for each fitted split. For the study's joint intervals, select the common-draw table in the manuscript source index.

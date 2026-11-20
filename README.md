@@ -1,108 +1,31 @@
 # A framework for benchmarking microbiome classifiers across heterogeneous inflammatory bowel disease cohorts
 
-This framework links four features of IBD microbiome cohorts to classifier comparison. Abundance scale and reported taxa define comparable inputs. Repeated sampling determines the scoring unit, and recruitment defines the target population. Keeping external predictions fixed, a reader can compare fitted procedures for a specified population, unit and metric.
+This software compares classifiers on a specified target population, scoring unit and metric. In the IBD study, abundance scale and taxon coverage determine which inputs can be aligned between HMP2 and the Franzosa panel. Recruitment source and repeat visits determine how the same external predictions are scored. The framework fits models on the source cohort and compares their fixed predictions using paired target-participant draws.
 
-The [framework diagram](manuscript/figures/Figure1_population_benchmark.png) shows how source-only fitting leads to these decisions. The [display index](manuscript/registry/figure_table_source_registry_20261117.csv) maps the six main figures, four main tables, three supplementary figures and fifteen supplementary tables to their sources. The section drafts and dated plotting files document earlier versions.
+## Quick start
 
-## Run the scoring example
-
-From the repository root or the extracted `Supplementary_Software_1.zip`, use Python 3.10 or later with NumPy and pandas installed. The [predictions](examples/fixed_predictions/predictions.csv) and [target manifest](examples/fixed_predictions/targets.csv) contain hand-written probabilities for two procedures and two fits, with 12 records from eight fictional participants across two recruitment groups.
+Run these commands from the repository root with Python 3.10 or later. The example requires NumPy and pandas. Two toy classifiers each provide two sets of predictions for 12 records from eight fictional participants.
 
 ```bash
+python -m pip install "numpy>=1.26" "pandas>=2.1"
 python scripts/score_fixed_predictions.py --predictions examples/fixed_predictions/predictions.csv --target-manifest examples/fixed_predictions/targets.csv --candidate procedure_a --references procedure_b --expected-fits 2 --n-bootstrap 5000 --seed 73 --output toy_scores.csv
 python examples/fixed_predictions/check_output.py toy_scores.csv
 ```
 
-The first command writes 18 comparisons to a fresh output path. The second compares every output field with the [expected scores](examples/fixed_predictions/expected_scores.csv) to an absolute numerical tolerance of 1e−12. Pooled participant AUROCs for A and B are 0.6406 and 0.7500. Their observed difference is −0.1094, and the conditional 95% interval spans −0.5939 to +0.4000. In clinic B, participant Brier scores are 0.2722 and 0.1671, giving a difference of +0.1051 [+0.0496, +0.2033] in favour of B for probability error. These illustrative values describe the synthetic target. The next section gives the IBD study results.
+Use a fresh path for the output. The last command checks all 18 comparisons against the expected scores. For example, the pooled participant-level AUROC is 0.6406 for procedure A and 0.7500 for procedure B.
 
-## Read the model comparison
+## Use the IBD data or your own predictions
 
-[Figure 5](manuscript/figures/Figure5_target_decisions.png) and Table 4 compare graph attention (GAT) with random forest (RF) for five target settings. Panels a and b show the observed mean differences over ten fixed fits and pointwise 95% intervals from 5,000 shared target-participant draws. Among the 65 Netherlands participants, GAT had lower Brier error (difference −0.0287, interval −0.0511 to −0.0058). The AUROC difference was +0.0702 (−0.0289 to +0.1736), leaving the ranking comparison open. In HMP2, RF had higher AUROC at both record and participant level.
+The study guide covers downloading the public inputs, preparing the 126 shared candidate taxa, fitting the primary GAT and tabular references, and scoring their predictions in either transfer direction. To use your own classifier, supply its predicted probabilities and a target manifest to the same scorer used in the quick start. [Study guide and input schema](docs/reproducibility.md)
 
-Panel c partitions the pooled Franzosa AUROC difference of +0.09932 into +0.05336 from within-group pairs and +0.04596 from cross-group pairs. Panel d follows the observed HMP2 Brier difference as the scoring rule changes: −0.00609 for equal records, +0.00489 for equal people with separate record losses, and +0.00862 for one mean probability per person. The two endpoint intervals both include zero (panel b). The [pair contributions](manuscript/source_data/pooled_auroc_components.csv) and [Brier components](manuscript/source_data/participant_brier_components.csv) also supply Supplementary Tables 14 and 15.
+This command prints the study's ten graph attention–random forest comparisons for AUROC and Brier score across five target settings.
 
 ```bash
 python scripts/show_target_decisions.py
-python -m pip install matplotlib
-python scripts/plot_target_decisions.py --root . --output-dir figures_out
 ```
 
-The display command prints all ten Table 4 comparisons. With Matplotlib installed, the plotting command writes Figure 5 as a PNG and a vector PDF from the three aggregate source tables. [Supplementary Figure 3](manuscript/figures/FigureS3_stratified_auroc.png) shows the four GAT–reference AUROC contrasts across recruitment groups and scoring units. Its points are bootstrap means, as in Figure 4. The [underlying summaries](manuscript/source_data/figure5_model_comparison.csv) also give the observed scores and fit SDs in Supplementary Table 12. The following commands check and export those data.
+Each row gives the target, scoring unit, metric, observed difference and conditional interval. The source index maps the manuscript results to their underlying data. [Figure and table sources](manuscript/registry/figure_table_source_registry_20261117.csv) · [Verification commands](repro/README.md)
 
-```bash
-python scripts/figure5_model_comparison.py --check
-python scripts/figure5_model_comparison.py --output absolute_scores_and_auroc_contrasts.csv
-```
+## Citation
 
-These commands export the absolute scores and paired AUROC results. The [joint-draw table](results/p0_rechecked_20261117/primary_common_draw_summary.csv) supplies the additional paired Brier comparisons in Supplementary Table 12. These commands use the published aggregate tables and Python's standard library. Use a new filename for the export. To find any main or supplementary display, see the [manuscript source index](manuscript/registry/figure_table_source_registry_20261117.csv). [Supplementary Table 11](manuscript/source_data/siamcat_observed_reference.csv) reports the observed scores of a separate native SIAMCAT LASSO reference, with 385 HMP2 records from 105 people. This microbial input contains the eligible HMP2 profile IDs that also occurred in the metabolomics list. The [50 seed-level selector results](manuscript/source_data/supplementary_figure1_selector.csv) supply Supplementary Figure 1.
-
-The [pooled record scores by source fit](manuscript/source_data/record_scores_by_fit.csv) reproduce Table 3 across all five procedures, the GAT and MLP summaries in Supplementary Table 6, and their fit-specific scores in [Supplementary Figure 2](manuscript/figures/FigureS2_gat_mlp.png). The table scores the archived primary predictions and includes the archived record scores for XGBoost. For paired intervals, use the joint-draw table above.
-
-```bash
-python scripts/decompose_fixed_predictions.py --check
-python repro/audits/validate_current_manuscript_index.py --root .
-```
-
-[Figure 3](manuscript/figures/Figure3_evaluation_controls.png) uses a one-nearest-neighbour leakage control, a planted calprotectin field and known-truth logistic-regression scenarios. The last scenario permutes target columns. [Supplementary Figure 1](manuscript/figures/FigureS1_selector.png) evaluates feature selection separately. For the taxon-aligned heatmaps in [Figure 6](manuscript/figures/Figure6_edge_replacement.png), the [formal edge archive](releases/formal_topology_edge_export_20261114.zip) contains directed edge lists and the taxon order for each fit. The display-index check reconstructs the 45 distinct graph pairs per direction.
-
-## Prepare the study inputs
-
-Download these provider files into a single directory, here called `provider_files`. The [catalogue](configs/data_catalog.json) gives the exact release filenames and file fingerprints. The new input directory and its derived tables stay local.
-
-| Source | File | Contents |
-| --- | --- | --- |
-| [IBDMDB MGX release, 4 May 2018](https://g-227ca.190ebd.75bc.data.globus.org/ibdmdb/products/HMP2/MGX/2018-05-04/taxonomic_profiles_3.tsv.gz) | `taxonomic_profiles_3.tsv.gz` | Merged abundance profiles. This is the file with the `_3` suffix. |
-| [IBDMDB metadata, 20 August 2018](https://g-227ca.190ebd.75bc.data.globus.org/ibdmdb/metadata/hmp2_metadata_2018-08-20.csv) | `hmp2_metadata_2018-08-20.csv` | Assay type, external sample ID, participant, visit, diagnosis, site and read depth. |
-| [Franzosa et al., Supplementary Dataset 4](https://www.nature.com/articles/s41564-018-0306-4#Sec35) | `41564_2018_306_MOESM6_ESM.xlsx` | Sheet `dataset_s4`, header in row 2. Sample names carry recruitment group. The Diagnosis row supplies CD, UC or Control labels. |
-| [Published HMP2 dysbiosis scores](https://forum.biobakery.org/uploads/short-url/umwfR0kDJ6s5RXHwtIMgLaOEoOI.tsv) (optional) | `dysbiosis_scores.tsv` | Provider's headerless three-column file. The importer compares its first-column IDs with the read-depth-qualified subset. |
-
-```bash
-python -m venv .venv
-# Activate the virtual environment before installing the package.
-python -m pip install -e ".[input,dev]"
-python scripts/prepare_published_profiles.py --input-dir provider_files --output-dir prepared
-python repro/audits/validate_current_manuscript_index.py --root .
-```
-
-To verify the 1,595 published sample IDs, add `--published-dysbiosis-ids provider_files/dysbiosis_scores.tsv` to the preparation command. The command creates four local CSV inputs and a `prepared/contract/` directory, checks the ordered 126-taxon registry, and verifies the sample-keyed projected abundances against the study panels. It requires a fresh output path and reports an error if the release fails these checks. For HMP2, species rows are matched to metagenomic External IDs after removing the profile suffix. For Franzosa, the loader excludes eight clinical/identifier rows before forming the taxon intersection. All fitted transformations and feature selection subsequently use source data.
-
-### Which observations entered the benchmark?
-
-HMP2 supplies 1,638 profiles matched to metadata. Twelve have zero mass over the 126 shared taxa. The remaining 1,626 profiles represent 130 participants (65 CD, 38 UC, 27 controls) and 1,584 participant–visit combinations. In the [original HMP2 analysis](https://pmc.ncbi.nlm.nih.gov/articles/PMC6650278/), downstream MGX analyses used a one-million-read threshold after host filtering and required detected microbial abundance. All 1,595 scored sample IDs match included profiles here. The 31 additional included profiles from 18 participants fall below the read-depth threshold. All 12 zero-shared-mass exclusions also fall below it. The main comparison uses all 1,626 records. Supplementary Table 13 also scores the published 1,595-record panel.
-
-Forty included participant–visit combinations have multiple profiles linked to the same collection. Of the 42 additional profiles at these keys, 20 carry technical-replicate and 22 pilot profile designations. Participant grouping keeps all such profiles together on the source side. On the target side, record-level metrics weight each profile equally, whereas participant-level metrics average a person's probabilities before scoring. The archived results describe these specified weights.
-
-The Franzosa panel has one profile per participant. PRISM discovery has 68 CD, 53 UC and 34 controls. Netherlands validation has 20 CD, 23 UC and 22 controls. Dutch cases were recruited through UMCG and controls through LifeLines-DEEP. Local IDs show no exact or normalized matches between studies. Study sample linkage and recruitment information do not establish whether any person enrolled in both studies.
-
-## Run a classifier or extend the comparison
-
-With compatible PyTorch and PyTorch Geometric installations, the primary transfer entry point accepts the prepared inputs directly. The recorded local graph stack used torch 2.7.1+cu118 and torch-geometric 2.4.0. The core dependency versions are listed in [requirements-reproducibility.txt](requirements-reproducibility.txt).
-
-```bash
-python -m pip install -e ".[model]"
-python scripts/run_no_prior_gat_transfer.py --contract-dir prepared/contract --legacy-root prepared --output-dir run_primary --topology spearman --n-splits 10
-```
-
-This entry point fits GAT, elastic net and random forest on participant-grouped source partitions and writes their metrics and probabilities. The no-message MLP also uses source training partitions. XGBoost selects parameters in grouped inner source folds, then refits on the complete source panel. The primary GAT uses minibatches of 32. In the separate edge-replacement experiment, each update uses the entire source training partition for every graph condition. [Supplementary model configurations](repro/audits/training_configuration.json) describe the primary and full-batch learners. The [formal graph intervention](results/reconciled_evidence/topology_constraints/formal_topology_runtime_manifest.json) uses an archived degree-preserving rewiring procedure and compares pre-convolution inputs. The generic launcher's shuffled-graph option uses a different randomization.
-
-### Score fixed predictions in the target population
-
-Choose the target population, scoring unit and metric for the comparison. The following command uses the seven-column output of the primary training command and the directory created by `prepare_published_profiles.py`.
-
-```bash
-python scripts/score_fixed_predictions.py --predictions run_primary/paired_predictions.csv --prepared-dir prepared --candidate no_prior_gat --references random_forest elastic_net --expected-fits 10 --n-bootstrap 5000 --output fixed_prediction_scores.csv
-```
-
-The scorer verifies target sample IDs, participant IDs and binary outcomes against the eligible records. Every named model and source fit must cover the same target panel. It scores Franzosa participants together and within each recruitment group. For HMP2, record scores use every eligible profile and participant scores use one mean probability per person per fit. The output gives absolute AUROC, average precision and Brier score, their source-fit SDs, the observed candidate-minus-reference difference, and its bootstrap mean and conditional 95% interval. In each draw the same participant counts weight all compared models and fits within that setting. Positive AUROC or AP differences favour the candidate; negative Brier differences favour the candidate.
-
-To add a classifier, supply its CSV alongside the primary prediction file after `--predictions` and include its model name under `--candidate` or `--references`. Required columns are `direction,split,model,sample_id,participant_id,outcome,probability`. Use one row per fit, model and target record. A new target population can supply `--target-manifest` in place of `--prepared-dir`, with `direction,sample_id,participant_id,outcome,origin` for every eligible target record. Use a blank origin throughout for a target with no recruitment groups. Use distinct output filenames for separate comparisons.
-
-### Check the influence of sampling on HMP2 scores
-
-With the same ten Franzosa fits, choose either all eligible profiles or the published depth-qualified profiles. Give profiles equal weight within each participant, or average first within collections and then within people. The [18-row score table](manuscript/source_data/hmp2_collection_sensitivity.csv) gives the denominators, absolute scores and paired intervals. All four person-level AUROC comparisons favoured random forest over GAT. For Brier score, all four paired intervals included zero.
-
-```bash
-python scripts/score_hmp2_collection_sensitivity.py --predictions run_primary/paired_predictions.csv --metadata provider_files/hmp2_metadata_2018-08-20.csv --published-scores provider_files/dysbiosis_scores.tsv --output hmp2_sensitivity.csv
-```
-
-Compact aggregate results are in [the paired summaries](results/p0_rechecked_20261117/) and [the absolute performance tables](results/reconciled_evidence/absolute_performance_summary.csv). Older dated artifacts retain their original conventions. The current display index selects the registered estimates for the manuscript, including the 5,000 shared draws for direct recruitment-group transfer.
+Please cite the accompanying manuscript when using this software or the study results. [Citation metadata](CITATION.cff) · [License](LICENSE)

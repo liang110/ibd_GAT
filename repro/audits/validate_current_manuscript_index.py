@@ -256,13 +256,13 @@ def main():
                           ('d', 'manuscript/source_data/participant_brier_components.csv')]:
         require(objects['Figure5' + panel] == [source, plot, figure],
                 f'Figure 5{panel} must reference its current source and rendering script')
-    require(objects['SuppFigureS3'] == [s12_sources[0], 'manuscript/figures/FigureS3_stratified_auroc.png'],
+    require(objects['SuppFigureS3'] == [s12_sources[0]],
             'Supplementary Figure 3 must reference the stratified four-model AUROC comparisons')
     require(objects['SuppTable12'] == s12_sources + [common_draws],
             'S12 requires the stratified AUROC sources and the primary paired Brier summary')
     selector_source = 'manuscript/source_data/supplementary_figure1_selector.csv'
     sensitivity_source = 'manuscript/source_data/hmp2_collection_sensitivity.csv'
-    require(objects['SuppFigureS1'] == [selector_source, 'manuscript/figures/FigureS1_selector.png'], 'S1 must reference the 40-variable selector experiment')
+    require(objects['SuppFigureS1'] == [selector_source], 'S1 must reference the 40-variable selector experiment')
     require(objects['SuppTable13'] == [sensitivity_source], 'S13 must reference the collection sensitivity analysis')
     check_selector_controls(pd.read_csv(root / selector_source))
     check_brier_and_sensitivity(pd.read_csv(root / s12_sources[0]), primary, pd.read_csv(root / sensitivity_source))
