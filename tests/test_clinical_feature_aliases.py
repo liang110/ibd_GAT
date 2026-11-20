@@ -43,8 +43,6 @@ def test_registry_and_matrix_loader_exclude_aliases(tmp_path: Path):
     assert clinical.canonical_feature_id.isna().all()
     shared = registry[registry.shared_across_hmp2_prism.eq(True)].canonical_feature_id.drop_duplicates().tolist()
     assert set(shared) == {x.lower() for x in taxa}
-    # The values are deliberately nonnumeric: the loader must remove clinical
-    # rows before validating and processing microbiome input values.
     pd.DataFrame({"feature": taxa + aliases, "sample1": [1, 3, "x", "x", "x"]}).to_csv(specs[0].path, index=False)
     matrix = load_canonical_microbiome(specs[0].path, pd.DataFrame({"sample_id": ["sample1"]}), shared)
     assert set(matrix.columns) == set(shared)

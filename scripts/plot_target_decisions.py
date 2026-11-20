@@ -1,4 +1,4 @@
-"""Draw Figure 5 from the archived GAT and random-forest study summaries."""
+"""Draw the target-specific GAT and random forest comparisons in Figure 5."""
 
 import argparse
 import csv
@@ -16,8 +16,8 @@ REVERSE = "#A5714B"
 INK = "#243642"
 SUBTLE = "#60717C"
 GUIDE = "#C2CDD2"
-SUMMARY = Path("results/p0_rechecked_20261117/primary_common_draw_summary.csv")
-SOURCES = Path("manuscript/source_data")
+SUMMARY = Path("results/comparisons/primary_common_draw_summary.csv")
+SOURCES = Path("results/source_data")
 TARGETS = (
     ("HMP2_to_PRISM", "pooled", "visit", "Franzosa pooled", 220, 220),
     ("HMP2_to_PRISM", "discovery", "visit", "PRISM discovery", 155, 155),

@@ -1,4 +1,4 @@
-"""Rebuild Supplementary Tables S14–S15 from the archived GAT and random-forest probabilities."""
+"""Decompose paired GAT and random forest predictions by recruitment group and participant weight."""
 
 import argparse
 import csv
@@ -44,7 +44,7 @@ def read_predictions(path):
         scores[model] = score
     for direction, by_fit in fits.items():
         if len(by_fit) != 10:
-            raise ValueError(f"Expected 10 archived fits in {direction}, found {len(by_fit)}")
+            raise ValueError(f"Expected 10 source fits in {direction}, found {len(by_fit)}")
         for fit, panel in by_fit.items():
             if panel.keys() != metadata[direction].keys() or any(set(s) != set(MODELS) for s in panel.values()):
                 raise ValueError(f"Incomplete paired target panel for {fit}")
@@ -72,7 +72,7 @@ def decompose_auroc(fits, metadata):
         groups[(origin, outcome)].append(sample)
     expected = {("discovery", 1): 121, ("discovery", 0): 34, ("validation", 1): 43, ("validation", 0): 22}
     if {k: len(v) for k, v in groups.items()} != expected:
-        raise ValueError("The four forward recruitment/outcome groups do not match the archived panel")
+        raise ValueError("The four forward recruitment/outcome groups do not match the study panel")
     n_cases = sum(len(groups[origin, 1]) for origin in ORIGINS)
     n_controls = sum(len(groups[origin, 0]) for origin in ORIGINS)
     n_pairs = n_cases * n_controls
@@ -119,7 +119,7 @@ def decompose_brier(fits, metadata):
 
 def verify(tables, summary):
     forward, reverse = tables
-    archived = {(r["direction"], r["target_stratum"], r["analysis_level"], r["metric"]): r
+    contrasts = {(r["direction"], r["target_stratum"], r["analysis_level"], r["metric"]): r
                 for r in read_csv(summary) if (r["candidate"], r["reference"]) == MODELS}
 
     def equal(a, b):
@@ -127,7 +127,7 @@ def verify(tables, summary):
             raise ValueError(f"Numerical mismatch: {a} versus {b}")
 
     def observed(key):
-        return archived[key]["split_mean_point_delta"]
+        return contrasts[key]["split_mean_point_delta"]
 
     if [(r["case_origin"], r["control_origin"]) for r in forward] != [(a, b) for a in ORIGINS for b in ORIGINS]:
         raise ValueError("Missing or repeated source-pair group")
@@ -157,9 +157,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     modes = parser.add_mutually_exclusive_group(required=True)
     modes.add_argument("--predictions", type=Path, help="Study prediction_ledger_long.csv")
-    modes.add_argument("--check", action="store_true", help="Verify packaged tables against the archived observed contrasts")
-    parser.add_argument("--table-dir", type=Path, default=ROOT / "manuscript/source_data")
-    parser.add_argument("--summary", type=Path, default=ROOT / "results/p0_rechecked_20261117/primary_common_draw_summary.csv")
+    modes.add_argument("--check", action="store_true", help="Verify packaged tables against the reported observed contrasts")
+    parser.add_argument("--table-dir", type=Path, default=ROOT / "results/source_data")
+    parser.add_argument("--summary", type=Path, default=ROOT / "results/comparisons/primary_common_draw_summary.csv")
     args = parser.parse_args()
     if args.check:
         tables = [list(read_csv(args.table_dir / name)) for name in TABLES]
@@ -174,7 +174,7 @@ def main():
                 writer = csv.DictWriter(file, fieldnames=rows[0].keys(), lineterminator="\n")
                 writer.writeheader()
                 writer.writerows(rows)
-    print("Verified four source-pair AUROCs, three reverse Brier stages and five archived observed contrasts.")
+    print("Verified four source-pair AUROCs, three reverse Brier stages and five observed contrasts.")
 
 
 if __name__ == "__main__":

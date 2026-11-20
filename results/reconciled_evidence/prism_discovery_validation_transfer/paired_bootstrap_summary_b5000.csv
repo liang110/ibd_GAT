@@ -1,7 +1,0 @@
-direction,reference,bootstrap_mean_delta_auroc,ci_low,ci_high,n_bootstrap,n_source_splits
-PRISM_discovery_to_validation,elastic_net,-0.21605729783772767,-0.38728129559256524,-0.04240035679115739,5000,10
-PRISM_discovery_to_validation,no_message_mlp,-0.19747282121632864,-0.38064636354940656,-0.00940669161010309,5000,10
-PRISM_discovery_to_validation,random_forest,-0.2736823757203906,-0.4386948655535968,-0.10158752062598078,5000,10
-PRISM_validation_to_discovery,elastic_net,-0.15242581361520452,-0.23464679050762335,-0.06537025808112751,5000,10
-PRISM_validation_to_discovery,no_message_mlp,-0.15539987177121797,-0.2329246347308563,-0.0747628537577607,5000,10
-PRISM_validation_to_discovery,random_forest,-0.1873289541879963,-0.25493267332457864,-0.1191804392193743,5000,10

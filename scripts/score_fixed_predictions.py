@@ -89,7 +89,7 @@ def aligned_predictions(frame, target, models):
 
 
 def bootstrap_counts(clusters, labels, count, seed):
-    """Generate the archived iid participant draws, discarding single-class draws."""
+    """Draw participants with replacement and discard single-class draws."""
     codes, names = pd.factorize(clusters, sort=False)
     positive = np.zeros(len(names), dtype=bool)
     positive[codes] = labels

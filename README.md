@@ -24,7 +24,7 @@ This command prints the study's ten graph attention–random forest comparisons 
 python scripts/show_target_decisions.py
 ```
 
-Each row gives the target, scoring unit, metric, observed difference and conditional interval. The source index maps the manuscript results to their underlying data. [Figure and table sources](manuscript/registry/figure_table_source_registry_20261117.csv) · [Verification commands](repro/README.md)
+Each row gives the target, scoring unit, metric, observed difference and conditional interval. The study results and their numerical sources are listed in the [results index](results/display_sources.csv). [Verification commands](repro/README.md)
 
 ## Citation
 

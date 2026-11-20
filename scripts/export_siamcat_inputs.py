@@ -32,15 +32,13 @@ def _aligned_manifest(path: Path, matrix: pd.DataFrame) -> pd.DataFrame:
 
 
 def _write_cohort(name: str, matrix: pd.DataFrame, manifest: pd.DataFrame, output: Path) -> dict:
-    # SIAMCAT expects features x samples. These values are closure-normalized in
-    # the frozen 126-species space; SIAMCAT transforms are fitted only on source.
+    # SIAMCAT expects taxa in rows and samples in columns.
     matrix_path = output / f"{name}_shared_species.csv"
     source_metadata_path = output / f"{name}_source_metadata.csv"
     target_metadata_path = output / f"{name}_target_metadata.csv"
     locked_outcomes_path = output / f"{name}_locked_outcomes.csv"
     matrix.T.to_csv(matrix_path, index_label="feature_id")
-    # The R training process receives outcome labels only when this cohort is a
-    # source. Target labels live in a separate post-prediction-only file.
+    # Hold target outcomes separately for evaluation after prediction.
     manifest.loc[:, ["sample_id", "outcome_ibd", "participant_id", "origin"]].to_csv(
         source_metadata_path, index=False
     )
@@ -70,7 +68,7 @@ def _write_cohort(name: str, matrix: pd.DataFrame, manifest: pd.DataFrame, outpu
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--contract-dir", type=Path, required=True)
-    parser.add_argument("--legacy-root", type=Path, required=True)
+    parser.add_argument("--prepared-dir", "--legacy-root", type=Path, required=True)
     parser.add_argument("--nielsen-projection", type=Path, required=True)
     parser.add_argument("--nielsen-manifest", type=Path, required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
@@ -82,9 +80,9 @@ def main() -> None:
     hmp_manifest_raw = pd.read_csv(args.contract_dir / "cohort_manifest_hmp2.csv")
     prism_manifest_raw = pd.read_csv(args.contract_dir / "cohort_manifest_prism.csv")
     nielsen_manifest_raw = pd.read_csv(args.nielsen_manifest)
-    hmp = load_canonical_microbiome(args.legacy_root / "manual_abundance.csv", hmp_manifest_raw, shared)
+    hmp = load_canonical_microbiome(args.prepared_dir / "manual_abundance.csv", hmp_manifest_raw, shared)
     prism = load_canonical_microbiome(
-        args.legacy_root / "prism_abundance_clean.csv", prism_manifest_raw, shared
+        args.prepared_dir / "prism_abundance_clean.csv", prism_manifest_raw, shared
     )
     nielsen = load_canonical_microbiome(args.nielsen_projection, nielsen_manifest_raw, shared)
     summaries = [

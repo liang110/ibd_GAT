@@ -1,4 +1,4 @@
-"""Nested source-only selection for the pre-registered standard model families."""
+"""Source-only hyperparameter selection and model fitting."""
 
 from __future__ import annotations
 
@@ -59,12 +59,7 @@ def select_standard_models(
     feature_cap: int | None = None,
     allow_ungrouped_early_stopping: bool = False,
 ) -> dict[str, SelectedModel]:
-    """Select exactly one candidate per family using source-only nested folds.
-
-    CLR transformation and MI feature selection are refit inside every inner
-    training fold. This ensures the held-out inner fold cannot influence a
-    candidate's preprocessing state, even indirectly.
-    """
+    """Select each model by mean validation AUROC, refitting CLR and feature selection in each inner training fold."""
     labels = np.asarray(y_source)
     candidates = standard_model_candidates(
         seed,
@@ -89,7 +84,7 @@ def select_standard_models(
                 probability = model.predict_proba(pipeline.transform(x_source.iloc[validation_idx]))[:, 1]
                 fold_scores.append(float(roc_auc_score(labels[validation_idx], probability)))
             scored.append((float(np.mean(fold_scores)), float(np.std(fold_scores, ddof=0)), candidate))
-        # Deterministic first-candidate tie handling preserves the declared grid order.
+        # Equal scores retain the first setting in grid order.
         mean_auc, std_auc, winner = max(scored, key=lambda item: item[0])
         selections[family] = SelectedModel(
             family=family,

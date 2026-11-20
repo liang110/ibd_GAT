@@ -1,10 +1,4 @@
-"""Deterministically export the public NielsenHB_2014 RData resources.
-
-The upstream ExperimentHub resources are immutable RData objects.  This
-module deliberately performs no label recoding or feature harmonization: it
-only turns the published objects into delimited inputs and records the sample
-ID join needed for the later data contract.
-"""
+"""Export NielsenHB_2014 ExperimentHub data and align samples to cohort metadata."""
 
 from __future__ import annotations
 
@@ -50,13 +44,7 @@ def export_public_resources(
     sample_metadata_rda: Path,
     output_dir: Path,
 ) -> dict[str, object]:
-    """Export the published taxa-by-sample matrix and curated study metadata.
-
-    ``relative_abundance.csv`` preserves the source orientation (taxa rows,
-    samples columns).  ``sample_metadata.csv`` contains every curated metadata
-    row for this study; no rows are silently removed because downstream label
-    eligibility must remain auditable.
-    """
+    """Export a taxa-by-sample abundance matrix and all metadata rows for this study."""
     abundance = _load_rdata(relative_abundance_rda)
     if not hasattr(abundance, "dims") or len(abundance.dims) != 2:
         raise ValueError("Relative-abundance object is not a two-dimensional array")
@@ -106,13 +94,7 @@ def export_public_resources(
 
 
 def terminal_species_label(feature_id: object) -> Optional[str]:
-    """Map a MetaPhlAn lineage to a species only when it explicitly has ``s__``.
-
-    This is intentionally separate from the framework's general canonicalizer:
-    the source cohorts already supply species labels while NielsenHB_2014
-    supplies complete lineages.  Collapsing a lineage to its terminal species
-    is a documented representation conversion, not a feature-selection step.
-    """
+    """Return the canonical species name for a lineage with exactly one s__ entry."""
     species = [part for part in str(feature_id).split("|") if part.startswith("s__")]
     if len(species) != 1:
         return None
@@ -135,12 +117,7 @@ def prepare_locked_external_target(
     source_shared_features_csv: Path,
     output_dir: Path,
 ) -> dict[str, object]:
-    """Create a label-audited Nielsen target using the already frozen source space.
-
-    The 126 species are loaded from a contract created before this target cohort
-    is observed.  There is no target-side prevalence filter, feature ranking,
-    tuning, or removal of unusable covariates in this function.
-    """
+    """Select eligible Nielsen records and project their abundances onto the source taxon list."""
     raw = pd.read_csv(relative_abundance_csv, index_col=0, low_memory=False)
     numeric = raw.apply(pd.to_numeric, errors="coerce")
     invalid = raw.notna() & numeric.isna()

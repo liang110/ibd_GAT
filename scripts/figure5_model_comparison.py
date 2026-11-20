@@ -33,8 +33,8 @@ def unique(rows, **keys):
 
 def assemble(root):
     results = root / "results"
-    final = results / "p0_rechecked_20261117"
-    main = read(results / "reconciled_evidence/absolute_performance_summary.csv")
+    final = results / "comparisons"
+    main = read(results / "comparisons/absolute_performance_summary.csv")
     boosted = read(final / "xgboost_metrics_by_scoring_unit.csv")
     contrasts = read(final / "primary_common_draw_summary.csv") + read(final / "xgboost_paired_common_draw.csv")
     output = []
@@ -82,7 +82,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     rows = assemble(args.root)
     if args.check:
-        current = read(args.root / "manuscript/source_data/figure5_model_comparison.csv")
+        current = read(args.root / "results/source_data/figure5_model_comparison.csv")
         if current != [{key: str(value) for key, value in row.items()} for row in rows]:
             raise SystemExit("Released S12 differs from the frozen aggregate sources")
         print(f"Verified {len(rows)} absolute-score rows and 16 paired AUROC contrasts.")

@@ -1,4 +1,4 @@
-"""Print the ten archived GAT-minus-random-forest contrasts in manuscript Table 4."""
+"""Print the ten target-specific GAT minus random forest comparisons in Table 4."""
 
 import argparse
 import csv
@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 
 
-SUMMARY = Path("results/p0_rechecked_20261117/primary_common_draw_summary.csv")
+SUMMARY = Path("results/comparisons/primary_common_draw_summary.csv")
 # Target label, stored direction and stratum, scoring level, scored units, people, control units.
 TARGETS = (
     ("Combined Franzosa", "HMP2_to_PRISM", "pooled", "visit", 220, 220, 56),

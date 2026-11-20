@@ -2,10 +2,9 @@
 """Check paths and key scientific identity in the current manuscript index."""
 import argparse
 import csv
-import io
-import itertools
-import json
-import zipfile
+from validate_topology import validate_topology
+from validate_comparisons import validate_comparisons
+from validate_truth_acceptance import validate_truth
 import subprocess
 import sys
 from pathlib import Path
@@ -20,7 +19,7 @@ def require(test, message):
 
 
 def check_decision_table(root, objects):
-    source = 'results/p0_rechecked_20261117/primary_common_draw_summary.csv'
+    source = 'results/comparisons/primary_common_draw_summary.csv'
     script = 'scripts/show_target_decisions.py'
     require(objects['Table4'] == [source, script], 'Table 4 must reference the common draws and display script')
     run = subprocess.run([sys.executable, str(root / script), '--root', str(root)],
@@ -46,44 +45,10 @@ def check_decision_table(root, objects):
         require(key == (target, unit, metric) and numbers == triple and row['supported_procedure'] == choice,
                 f'Table 4 comparison no longer matches its manuscript entry for {target}/{unit}/{metric}')
 
-def check_taxon_alignment(root, objects):
-    archive = 'releases/formal_topology_edge_export_20261114.zip'
-    summary_file = 'results/p0_rechecked_20261117/topology_taxon_aligned_summary.csv'
-    require(archive in objects['Figure6'] and archive in objects['SuppTable5'], 'Missing formal edge lists')
-    summary = pd.read_csv(root / summary_file).set_index('direction', verify_integrity=True)
-    prefix = 'formal_topology_edge_export/'
-    with zipfile.ZipFile(root / archive) as bundle:
-        metadata = json.loads(bundle.read(prefix + 'formal_split_feature_manifest.json'))
-        for direction in ['HMP2_to_PRISM', 'PRISM_to_HMP2']:
-            fits = sorted((r for r in metadata if r['direction'] == direction), key=lambda r: r['split'])
-            require([r['split'] for r in fits] == list(range(1, 11)), 'Incomplete feature order')
-            mapped_edges = []
-            for r in fits:
-                names = r['selected_feature_ids']
-                filename = f"{prefix}edge_lists/{direction}/split_{r['split']:02d}/real_spearman.csv"
-                with bundle.open(filename) as source:
-                    directed = {(int(e['source']), int(e['target']))
-                                for e in csv.DictReader(io.TextIOWrapper(source, encoding='utf-8'))}
-                require(len(directed) == 8 * len(names) and all(i != j for i, j in directed)
-                        and len(names) == len(set(names)), 'Invalid directed Spearman input')
-                mapped_edges.append((directed, {(names[i], names[j]) for i, j in directed}))
-            for ix, field in enumerate(['local_mean', 'taxon_mean']):
-                values = [len(a[ix] & b[ix]) / len(a[ix] | b[ix])
-                          for a, b in itertools.combinations(mapped_edges, 2)]
-                row = summary.loc[direction]
-                require(len(values) == int(row.n_pairs) == 45 and
-                        abs(sum(values)/len(values) - row[field]) < 1e-12,
-                        f'Edge pairs disagree with {field} in {direction}')
-                if field == 'taxon_mean':
-                    require(abs(min(values) - row.taxon_min) < 1e-12 and
-                            abs(max(values) - row.taxon_max) < 1e-12,
-                            'Taxon-aligned overlap range mismatch')
-
-
 def check_record_scores(root, objects, primary, xgboost):
-    filename = 'manuscript/source_data/record_scores_by_fit.csv'
+    filename = 'results/source_data/record_scores_by_fit.csv'
     for display in ['Table3', 'SuppTable6', 'SuppFigureS2']:
-        require(filename in objects[display], f'{display} must reference the archived record scores')
+        require(filename in objects[display], f'{display} must reference the recorded fit scores')
     scores = pd.read_csv(root / filename)
     models = {'no_prior_gat','random_forest','elastic_net','capacity_matched_no_message_passing','xgboost'}
     require(len(scores) == 100 and set(scores.model) == models and
@@ -176,7 +141,7 @@ def main():
     parser.add_argument('--registry', type=Path)
     args = parser.parse_args()
     root = args.root.resolve()
-    index = args.registry or root / 'manuscript/registry/figure_table_source_registry_20261117.csv'
+    index = args.registry or root / 'results/display_sources.csv'
     with index.open(encoding='utf8', newline='') as handle:
         rows = list(csv.DictReader(handle))
     ids = [r['display_id'] for r in rows]
@@ -187,7 +152,7 @@ def main():
             candidate = (root / src).resolve()
             require(candidate.is_relative_to(root) and candidate.is_file(), f'missing or unsafe source: {src}')
     s8 = next(r for r in rows if r['display_id'] == 'SuppTable8')
-    require(s8['source_object'] == 'results/p0_rechecked_20261117/prism_direct_transfer_paired.csv', 'Table S8 points to a nonfinal summary')
+    require(s8['source_object'] == 'results/comparisons/prism_direct_transfer_paired.csv', 'Table S8 points to a nonfinal summary')
     direct = pd.read_csv(root / s8['source_object'])
     require(set(direct.direction) == {'PRISM_discovery_to_validation', 'PRISM_validation_to_discovery'}, 'wrong direct-transfer directions')
     require(set(direct.reference) == {'elastic_net', 'random_forest', 'no_message_mlp'}, 'wrong reference models')
@@ -207,10 +172,9 @@ def main():
         row = selected.iloc[0]
         actual = tuple(f'{row[c]:.4f}' for c in ('point_mean_delta_auroc', 'ci_low', 'ci_high'))
         require(actual == expected, f'Table S8 manuscript numbers mismatch for {key}: {actual}')
-    primary = pd.read_csv(root / 'results/p0_rechecked_20261117/primary_common_draw_summary.csv')
-    xgboost = pd.read_csv(root / 'results/p0_rechecked_20261117/xgboost_paired_common_draw.csv')
-    # Source tables preserve the historic field name `visit`. Its rows are
-    # record-scored for HMP2; participant is the bootstrap sampling unit.
+    primary = pd.read_csv(root / 'results/comparisons/primary_common_draw_summary.csv')
+    xgboost = pd.read_csv(root / 'results/comparisons/xgboost_paired_common_draw.csv')
+    # HMP2 visit scores use records and resample participants.
     metrics = {'roc_auc', 'average_precision', 'brier'}
     for label, data in [('primary', primary), ('xgboost', xgboost)]:
         for direction in ('HMP2_to_PRISM', 'PRISM_to_HMP2'):
@@ -225,21 +189,26 @@ def main():
             require(len(selection) == (3 if label == 'primary' else 1), f'Supplementary Figure 3b {label} coverage mismatch for {level}')
     row = primary[(primary.direction == 'HMP2_to_PRISM') & (primary.target_stratum == 'pooled') & (primary.analysis_level == 'visit') & (primary.reference == 'random_forest') & (primary.metric == 'roc_auc')]
     require(len(row) == 1 and abs(row.iloc[0].common_draw_bootstrap_mean - .0991) < .00006, 'primary pooled GAT–RF contrast mismatch')
-    f3 = pd.read_csv(root / 'manuscript/source_data/Figure3_repeated_leakage.csv')
+    f3 = pd.read_csv(root / 'results/source_data/Figure3_repeated_leakage.csv')
     require(len(f3) == 10 and abs(f3.random_split_subject_overlap.mean() - 43) < 1e-9, 'Figure 3 seed or overlap mismatch')
     objects = {r['display_id']: r['source_object'].split(';') for r in rows}
+    validate_comparisons(root / 'results/comparisons')
+    validate_truth(root / 'results/controls/per_seed_acceptance.csv', root / 'results/controls/truth_acceptance_rules.json',
+                   root / 'results/comparisons/known_truth_acceptance_summary.csv')
     check_decision_table(root, objects)
-    check_taxon_alignment(root, objects)
+    topology_sources = {'results/topology/' + name for name in ('edges.csv', 'graphs.csv', 'features.csv')}
+    require(all(topology_sources.issubset(objects[key]) for key in ('Figure6', 'SuppTable5')), 'Missing topology sources')
+    validate_topology(root)
     check_record_scores(root, objects, primary, xgboost)
     for display, filename in [('SuppTable14','pooled_auroc_components.csv'),
                               ('SuppTable15','participant_brier_components.csv')]:
-        require(objects[display] == ['manuscript/source_data/' + filename,
-                'results/p0_rechecked_20261117/primary_common_draw_summary.csv',
+        require(objects[display] == ['results/source_data/' + filename,
+                'results/comparisons/primary_common_draw_summary.csv',
                 'scripts/decompose_fixed_predictions.py'], f'{display} source mapping mismatch')
     subprocess.run([sys.executable, str(root / 'scripts/decompose_fixed_predictions.py'), '--check',
-                    '--table-dir', str(root / 'manuscript/source_data'), '--summary',
-                    str(root / 'results/p0_rechecked_20261117/primary_common_draw_summary.csv')], check=True)
-    paired_s9 = 'results/reconciled_evidence/identity_aware_topology/paired_split_contrasts.csv'
+                    '--table-dir', str(root / 'results/source_data'), '--summary',
+                    str(root / 'results/comparisons/primary_common_draw_summary.csv')], check=True)
+    paired_s9 = 'results/topology/identity_aware_contrasts.csv'
     require(paired_s9 in objects['SuppTable9'], 'Missing stored taxon-embedding fit contrasts for Table S9')
     pairs = pd.read_csv(root / paired_s9)
     require(len(pairs) == 20 and not pairs.duplicated(['direction', 'split']).any()
@@ -247,21 +216,20 @@ def main():
             and all(set(group.split) == set(range(1, 11)) for _, group in pairs.groupby('direction'))
             and (pairs.real_auroc - pairs.rewired_auroc - pairs.real_minus_rewired).abs().lt(1e-12).all(),
             'Incorrect Table S9 identity-aware paired source fits')
-    s12_sources = ['manuscript/source_data/figure5_model_comparison.csv', 'manuscript/source_data/figure5_gat_rf_by_fit.csv']
-    common_draws = 'results/p0_rechecked_20261117/primary_common_draw_summary.csv'
+    s12_sources = ['results/source_data/figure5_model_comparison.csv', 'results/source_data/figure5_gat_rf_by_fit.csv']
+    common_draws = 'results/comparisons/primary_common_draw_summary.csv'
     plot = 'scripts/plot_target_decisions.py'
-    figure = 'manuscript/figures/Figure5_target_decisions.png'
     for panel, source in [('a', common_draws), ('b', common_draws),
-                          ('c', 'manuscript/source_data/pooled_auroc_components.csv'),
-                          ('d', 'manuscript/source_data/participant_brier_components.csv')]:
-        require(objects['Figure5' + panel] == [source, plot, figure],
+                          ('c', 'results/source_data/pooled_auroc_components.csv'),
+                          ('d', 'results/source_data/participant_brier_components.csv')]:
+        require(objects['Figure5' + panel] == [source, plot],
                 f'Figure 5{panel} must reference its current source and rendering script')
     require(objects['SuppFigureS3'] == [s12_sources[0]],
             'Supplementary Figure 3 must reference the stratified four-model AUROC comparisons')
     require(objects['SuppTable12'] == s12_sources + [common_draws],
             'S12 requires the stratified AUROC sources and the primary paired Brier summary')
-    selector_source = 'manuscript/source_data/supplementary_figure1_selector.csv'
-    sensitivity_source = 'manuscript/source_data/hmp2_collection_sensitivity.csv'
+    selector_source = 'results/source_data/supplementary_figure1_selector.csv'
+    sensitivity_source = 'results/source_data/hmp2_collection_sensitivity.csv'
     require(objects['SuppFigureS1'] == [selector_source], 'S1 must reference the 40-variable selector experiment')
     require(objects['SuppTable13'] == [sensitivity_source], 'S13 must reference the collection sensitivity analysis')
     check_selector_controls(pd.read_csv(root / selector_source))
@@ -277,7 +245,7 @@ def main():
         group = fits[(fits.source == row.source) & (fits.target == row.target) & (fits.scoring_unit == row.scoring_unit)]
         require(set(group.source_fit) == set(range(1, 11)), 'Matched fits 1 through 10 required')
         require(abs(group.gat_minus_rf_observed.mean() - row.gat_minus_model_observed) < 1e-12, 'Fit and summary contrasts disagree')
-    s11 = 'manuscript/source_data/siamcat_observed_reference.csv'
+    s11 = 'results/source_data/siamcat_observed_reference.csv'
     require(objects['SuppTable11'] == [s11], 'S11 must reference the native observed reference')
     reference = pd.read_csv(root / s11)
     expected = {

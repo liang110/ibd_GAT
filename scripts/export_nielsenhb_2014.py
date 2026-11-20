@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Export the pinned public NielsenHB_2014 resources without changing them."""
+"""Export NielsenHB_2014 abundance profiles and sample metadata."""
 
 from __future__ import annotations
 

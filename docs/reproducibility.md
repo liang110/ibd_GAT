@@ -25,10 +25,10 @@ Install PyTorch and PyTorch Geometric versions compatible with your CPU or CUDA 
 
 ```bash
 python -m pip install -e ".[model]"
-python scripts/run_no_prior_gat_transfer.py --contract-dir prepared/contract --legacy-root prepared --output-dir run_primary --topology spearman --n-splits 10
+python scripts/run_no_prior_gat_transfer.py --contract-dir prepared/contract --prepared-dir prepared --output-dir run_primary --topology spearman --n-splits 10
 ```
 
-This entry point fits GAT, elastic net and random forest in both directions. Each source split groups records by participant. The primary GAT uses minibatches of 32 and a source-derived Spearman graph. The separate model comparisons in the paper include a no-message MLP and XGBoost. XGBoost uses source-grouped parameter selection and then refits on the complete source panel. The independent topology experiment uses full-batch updates and a degree-preserving rewiring procedure. Its formal record identifies the exact input graphs. [Training configurations](../repro/audits/training_configuration.json) · [Topology run manifest](../results/reconciled_evidence/topology_constraints/formal_topology_runtime_manifest.json)
+Use a fresh output directory. This entry point fits GAT, elastic net and random forest in both directions. Each source split groups records by participant. The primary GAT uses minibatches of 32 and a source-derived Spearman graph. The separate model comparisons in the paper include a no-message MLP and XGBoost. XGBoost uses source-grouped parameter selection and then refits on the complete source panel. The independent topology experiment compares graph inputs under full-batch training. [Training configurations](../repro/audits/training_configuration.json) · [Topology settings](../results/topology/training.json)
 
 ## Score fixed predictions
 
@@ -51,4 +51,4 @@ Record-level scoring weights each profile equally. Participant-level scoring ave
 python scripts/score_hmp2_collection_sensitivity.py --predictions run_primary/paired_predictions.csv --metadata provider_files/hmp2_metadata_2018-08-20.csv --published-scores provider_files/dysbiosis_scores.tsv --output hmp2_sensitivity.csv
 ```
 
-The manuscript index identifies the result sources, including the five-procedure pooled scores, the separate SIAMCAT reference and the HMP2 collection sensitivity analysis. [Study results](../manuscript/registry/figure_table_source_registry_20261117.csv) · [Checks on released results](../repro/README.md)
+The results index identifies the five-procedure pooled scores, the separate SIAMCAT reference and the HMP2 collection sensitivity analysis. The native SIAMCAT LASSO analysis used 385 HMP2 records from 105 participants, the Franzosa panel and a separate Nielsen external target. Its recorded scores are reported in Supplementary Table 11. [Study results](../results/display_sources.csv) · [Verification commands](../repro/README.md)

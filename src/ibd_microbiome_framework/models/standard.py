@@ -1,4 +1,4 @@
-"""Pre-registered classifier families for source-only benchmarking."""
+"""Classifier families and parameter grids for source-only comparisons."""
 
 from __future__ import annotations
 
@@ -15,15 +15,8 @@ from sklearn.svm import SVC
 def standard_model_candidates(
     seed: int, include_xgboost: bool = True, allow_ungrouped_early_stopping: bool = False
 ) -> dict[str, list[ClassifierMixin]]:
-    """Return an equal four-setting grid for each tunable model family.
-
-    Candidate construction is deliberately independent of cohort labels and target
-    data. The prevalence baseline has no hyperparameter selection by design.
-    MLP automatic early stopping is disabled by default because scikit-learn's
-    internal validation split is sample-based rather than participant-grouped.
-    The opt-in flag is retained only for legacy comparisons and must not be used
-    for participant-aware claims.
-    """
+    """Return the source model grids, including a constant prevalence baseline.
+    The optional MLP early-stopping split operates on records."""
     candidates: dict[str, list[ClassifierMixin]] = {
         "prevalence_baseline": [DummyClassifier(strategy="prior")],
         "logistic_l2": [

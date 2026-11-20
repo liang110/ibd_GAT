@@ -1,4 +1,4 @@
-"""Small, auditable No-Prior GAT for the shared microbiome contract."""
+"""Graph attention classifier with mean pooling over taxon nodes."""
 from __future__ import annotations
 import torch
 from torch import nn

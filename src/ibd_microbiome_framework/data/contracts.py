@@ -1,4 +1,4 @@
-"""Build auditable cohort and feature contracts from frozen delimited matrices."""
+"""Build cohort manifests and a shared-feature registry from abundance matrices."""
 
 from __future__ import annotations
 
@@ -19,8 +19,6 @@ from ibd_microbiome_framework.harmonization.features import (
 )
 
 
-# Label mapping is deliberately explicit.  A missing or previously unseen label
-# must stop contract construction rather than being silently treated as IBD.
 ALLOWED_CONTROL_LABELS = {
     "Control", "control", "nonIBD", "non-IBD", "non-IBD/control",
 }
@@ -65,7 +63,7 @@ def matrix_axes(path: Path) -> tuple[List[str], List[str]]:
 
 
 def abundance_library_sizes(path: Path) -> pd.Series:
-    """Compute sample sums for a modest abundance matrix using numeric coercion."""
+    """Sum the numeric entries of each sample column."""
     frame = pd.read_csv(path, index_col=0, low_memory=False)
     numeric = frame.apply(pd.to_numeric, errors="coerce").fillna(0.0)
     return numeric.sum(axis=0)
@@ -80,7 +78,7 @@ def infer_prism_origin(sample_id: str) -> str:
 
 
 def _longitudinal_participant_ids(manifest: pd.DataFrame, cohort: str) -> pd.Series:
-    """Resolve participant aliases without ever treating sample IDs as people."""
+    """Resolve the participant identifiers used to group repeated observations."""
     aliases = [name for name in ("Participant ID", "participant_id") if name in manifest]
     if not aliases:
         raise ValueError(f"{cohort}: participant identifier required: Participant ID or participant_id")
@@ -110,8 +108,6 @@ def build_manifest(spec: MatrixSpec, matrix_samples: Sequence[str]) -> pd.DataFr
         manifest["site"] = "unknown"
         manifest["timepoint"] = "cross_sectional"
     elif spec.cohort == "NielsenHB_2014":
-        # Nielsen origin is carried by the cohort-specific loader when present.
-        # Keep the generic contract path explicit rather than falling back to HMP2.
         manifest["origin"] = manifest.get("country", spec.cohort)
         manifest["participant_id"] = manifest.get("Participant ID", manifest["sample_id"])
         manifest["site"] = manifest.get("site_name", "unknown")
@@ -184,10 +180,8 @@ def build_feature_registry(
 def write_contracts(
     specs: Sequence[MatrixSpec], output_dir: Path, source_root: Path
 ) -> Dict[str, object]:
-    """Write manifests and a feature registry; never alter source matrices."""
-    # Check before writing anything: a duplicate pair would overwrite the
-    # registry entries and the modality-specific manifest. File names are
-    # lowercase, so compare pairs case-insensitively as well.
+    """Write per-modality manifests, feature inventories and the shared-feature list."""
+    # Manifest filenames use lowercase cohort and modality names.
     seen: set[tuple[str, str]] = set()
     for spec in specs:
         key = (spec.cohort.casefold(), spec.modality.casefold())
@@ -215,8 +209,7 @@ def write_contracts(
             }
         )
         manifest = build_manifest(spec, samples)
-        # Distinguish modalities; the historical cohort-only name remains an
-        # exact microbiome alias for existing pipeline entry points.
+        # The cohort-only manifest is the microbiome sample list.
         cohort_name = spec.cohort.lower()
         modality_name = spec.modality.lower()
         manifest.to_csv(output_dir / f"cohort_manifest_{cohort_name}_{modality_name}.csv", index=False)

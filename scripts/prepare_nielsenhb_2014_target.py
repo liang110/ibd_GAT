@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Prepare NielsenHB_2014 only as a locked, source-feature external target."""
+"""Align NielsenHB_2014 profiles to the source study taxa for external scoring."""
 
 from __future__ import annotations
 

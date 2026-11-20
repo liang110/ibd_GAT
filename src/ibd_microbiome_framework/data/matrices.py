@@ -1,4 +1,4 @@
-"""Load a canonical shared microbiome matrix without silent target imputation."""
+"""Load and align microbial abundance matrices in the shared taxon space."""
 
 from __future__ import annotations
 
@@ -14,9 +14,7 @@ from ibd_microbiome_framework.harmonization.features import canonical_taxon, is_
 def load_canonical_microbiome(path: Path, manifest: pd.DataFrame, shared_features: Sequence[str]) -> pd.DataFrame:
     """Return samples x shared taxa after deterministic name mapping and closure."""
     raw = pd.read_csv(path, index_col=0, low_memory=False)
-    # Remove declared clinical/identifier rows before validating numeric cells.
-    # Legacy PRISM tables contain text metadata rows alongside abundances; those
-    # rows are explicitly outside the feature contract and must not abort loading.
+    # PRISM profiles include clinical metadata among the taxon rows.
     keep = [not is_forbidden_feature(name) for name in raw.index]
     raw = raw.loc[keep]
     numeric = raw.apply(pd.to_numeric, errors="coerce")
@@ -26,14 +24,12 @@ def load_canonical_microbiome(path: Path, manifest: pd.DataFrame, shared_feature
             f"{path.name} contains {int(invalid_cells.to_numpy().sum())} non-numeric abundance cells; "
             "review the input rather than coercing them to zero"
         )
-    # Blank cells are retained as structural zeros only after non-numeric input
-    # has been rejected above; this avoids silent value-to-zero coercion.
+    # Empty cells denote zero abundance.
     numeric = numeric.fillna(0.0)
     keep = [not is_forbidden_feature(name) for name in numeric.index]
     numeric = numeric.loc[keep]
     numeric.index = [canonical_taxon(name) for name in numeric.index]
     numeric = numeric.loc[numeric.index.notna()]
-    # Multiple source identifiers mapping to one canonical taxon are aggregated.
     numeric = numeric.groupby(level=0, sort=True).sum()
     requested = list(shared_features)
     absent = sorted(set(requested).difference(numeric.index))
@@ -45,14 +41,10 @@ def load_canonical_microbiome(path: Path, manifest: pd.DataFrame, shared_feature
         raise ValueError(f"{path.name} lacks {len(absent_samples)} manifest samples")
     matrix = numeric.loc[requested, sample_ids].T.astype(float)
     totals = matrix.sum(axis=1)
-    # A sample with zero mass in the *declared* shared space cannot be CLR
-    # transformed. It is explicitly excluded by the caller and recorded in the
-    # run audit; silently filling it would create an artificial composition.
+    # Closure is undefined for samples with zero mass on the shared taxa.
     matrix = matrix.loc[totals > 0].copy()
     if matrix.empty:
         raise ValueError(f"{path.name} has no samples with positive shared-space mass")
-    # The legacy inputs use incompatible percentage/proportion scales. Closure
-    # produces a common compositional representation before any fitted transform.
     return matrix.div(matrix.sum(axis=1), axis=0)
 
 

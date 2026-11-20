@@ -36,14 +36,8 @@ def make_portability_benchmark(
     target_topology_shift: bool = False,
     min_truth_prevalence: float = 0.0,
 ):
-    """Inject shared disease effects and source-only batch effects into real profiles.
-
-    Labels are synthetic. A disease-associated multiplicative effect is shared across
-    source and target. The source contains two observed batch environments with
-    opposite label-to-batch correlations; the target keeps one of those directions.
-    A feature that is only a batch shortcut therefore has no pooled source association,
-    while the disease effect has replication across all environments.
-    """
+    """Generate synthetic labels, shared disease effects and opposing source batch effects.
+    The target receives the batch effect on control records."""
     n_truth_features = n_disease_features + n_batch_features + n_topology_features
     if background.shape[1] < n_truth_features:
         raise ValueError("Background has too few features for the requested truth set")
@@ -82,12 +76,8 @@ def make_portability_benchmark(
     batch_idx = [feature_index[name] for name in batch]
     topology_idx = [feature_index[name] for name in topology]
 
-    # Shared causal effects: both cohorts carry the same abundance shifts.
     source_values[np.ix_(source_y == 1, disease_idx)] *= disease_multiplier
     target_values[np.ix_(target_y == 1, disease_idx)] *= disease_multiplier
-    # Batch correlation reverses between two source environments. This is the minimum
-    # controlled setting in which source data can distinguish replicated signal from a
-    # site-specific shortcut; a single-source environment cannot identify that contrast.
     source_environment = np.arange(n_source) % 2
     source_values[np.ix_((source_y == 1) & (source_environment == 0), batch_idx)] *= batch_multiplier
     source_values[np.ix_((source_y == 0) & (source_environment == 1), batch_idx)] *= batch_multiplier
@@ -95,8 +85,7 @@ def make_portability_benchmark(
     if target_topology_shift:
         if not topology_idx:
             raise ValueError("Topology shift requires at least one topology feature")
-        # Independently permuting selected target columns preserves their marginal
-        # distributions while disrupting their source-derived covariance structure.
+        # Permutation preserves each column's marginal distribution before closure.
         for feature_idx in topology_idx:
             target_values[:, feature_idx] = target_values[rng.permutation(n_target), feature_idx]
     source_values = _renormalize(source_values)
@@ -121,12 +110,7 @@ def make_repeated_subject_benchmark(
     repeats: int = 3,
     random_state: int = 20260815,
 ) -> tuple[pd.DataFrame, pd.Series, pd.Series]:
-    """Create near-replicate profiles with random subject-level labels.
-
-    There is deliberately no disease effect. A sample-wise split can recognize
-    held-out repeats from the same subject, whereas a subject-group split cannot
-    use that identity shortcut.
-    """
+    """Generate repeated profiles sharing random participant-level labels for the leakage control."""
     if len(background) < n_subjects:
         raise ValueError("Background has too few profiles for repeated-subject simulation")
     if repeats < 2:

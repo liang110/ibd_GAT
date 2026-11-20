@@ -1,31 +1,19 @@
-# Check the study results
+# Verify the study results
 
-Run these commands from the repository root. The checks use aggregate data, recorded graphs and synthetic examples.
+Run the following commands from the repository root with the Python dependencies installed.
 
 ```bash
-python -m pip install -e ".[dev]"
-python -m pytest -q
 python repro/audits/validate_current_manuscript_index.py --root .
+python -m pytest -q
 ```
 
-The index check locates the registered sources and verifies the target-specific GAT–random forest comparisons, pooled scores by fit, the contributions to pooled AUROC, and the three participant-weighting stages for Brier error. It also compares the 45 distinct source-fit graph pairs in each direction after matching node indices to taxa. [Manuscript source index](../manuscript/registry/figure_table_source_registry_20261117.csv)
+The [results index](../results/display_sources.csv) identifies the data for all 28 manuscript and supplementary displays. The first command checks source-fit scores, shared target-participant intervals, the ten GAT–random forest comparisons, the AUROC and Brier decompositions, graph inputs and known-truth controls.
 
-## Individual checks
+For a focused check:
 
 ```bash
-python scripts/decompose_fixed_predictions.py --check
-python scripts/figure5_model_comparison.py --check
-python repro/audits/validate_truth_acceptance.py --ledger results/reconciled_evidence/truth_acceptance/per_seed_acceptance.csv
-python repro/audits/validate_reconstructed_edge_lists.py --archive releases/formal_topology_edge_export_20261114.zip
+python repro/audits/validate_truth_acceptance.py --root .
+python repro/audits/validate_topology.py --root .
 ```
 
-The first command checks the source-pair AUROC and participant-weighted Brier components. The second verifies the absolute scores and paired AUROC contrasts used in Supplementary Table 12 and Supplementary Figure 3. The remaining commands check the known-truth decisions for individual seeds and the archived input edges for the topology experiment.
-
-With Matplotlib installed, the plotting script renders the target-specific comparison from the three aggregate source tables.
-
-```bash
-python -m pip install matplotlib
-python scripts/plot_target_decisions.py --root . --output-dir figures_out
-```
-
-The [scoring example](../README.md#quick-start) checks the score calculation with synthetic participant records. To reproduce external predictions from the published cohort inputs, follow the [study guide](../docs/reproducibility.md).
+The truth check applies the published acceptance rules to both sets of fifty seed-level results. The topology check reads each graph's directed edge list, split-specific taxon order and recorded fit metrics. It verifies the five degree-preserving rewires against each associated Spearman graph, checks self-loop controls and recalculates the 45 between-fit overlaps per direction.

@@ -1,5 +1,4 @@
 """Split plans and evaluation utilities."""
-"""Evaluation utilities and split plans."""
 
 from ibd_microbiome_framework.evaluation.standard_benchmark import (
     SelectedModel,

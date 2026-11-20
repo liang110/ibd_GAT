@@ -1,7 +1,3 @@
-# Native SIAMCAT reference implementation for the fixed source-only benchmark.
-# This script is intentionally separate from the Python CLR benchmark because
-# SIAMCAT owns its own source-fitted normalization workflow.
-
 arguments <- commandArgs(trailingOnly = TRUE)
 if (length(arguments) != 6L) {
   stop(paste(
@@ -59,15 +55,13 @@ labels <- SIAMCAT::create.label(
   case = "IBD"
 )
 model <- SIAMCAT::siamcat(feat = source_data, label = labels)
-# All filtering and normalization are fitted on the source cohort only.
 model <- SIAMCAT::filter.features(model, filter.method = "abundance", cutoff = 1e-06)
 model <- SIAMCAT::normalize.features(
   model,
   norm.method = "log.std",
   norm.param = list(log.n0 = 1e-06, sd.min.q = 0.1)
 )
-# The split is defined only in the source cohort. Five source-trained LASSO
-# models are later averaged on the locked external target.
+# Average predictions from five source-fold LASSO models for each target sample.
 model <- SIAMCAT::create.data.split(model, num.folds = 5, num.resample = 1, stratify = TRUE)
 model <- SIAMCAT::train.model(model, method = "lasso")
 

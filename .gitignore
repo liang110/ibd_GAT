@@ -1,4 +1,3 @@
-# Python
 __pycache__/
 *.py[cod]
 .pytest_cache/
@@ -7,24 +6,28 @@ __pycache__/
 .coverage
 htmlcov/
 .venv/
-
-# Runtime data and model products are externally versioned.
+*.egg-info/
+build/
+dist/
+provider_files/
+prepared/
+run_primary/
+figures_out/
+toy_scores.csv
+fixed_prediction_scores.csv
+hmp2_sensitivity.csv
 data/raw/
 data/interim/
 data/processed/
-artifacts/runs/
-artifacts/models/
-artifacts/cache/
+artifacts/
 logs/
-
-# Keep legacy evidence tracked, but not compressed duplicates.
 *.pt
 *.pth
 *.ckpt
 *.joblib
 *.log
-
-# Editor and OS
+*.zip
+.Rhistory
 .DS_Store
 .vscode/
 .idea/

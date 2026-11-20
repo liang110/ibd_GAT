@@ -49,8 +49,7 @@ class CLRFeaturePipeline:
         if self.feature_cap is not None:
             if self.feature_cap < 2:
                 raise ValueError("feature_cap must retain at least two features")
-            # The cap is calculated from the current training fold only.
-            # Canonical feature IDs give deterministic tie handling.
+            # Break prevalence ties by canonical feature ID.
             ranked = sorted(prevalence.index, key=lambda name: (-prevalence[name], str(name)))
             retained = ranked[: min(self.feature_cap, len(ranked))]
             prevalence = prevalence.loc[retained]
@@ -96,43 +95,3 @@ class CLRFeaturePipeline:
         values = x.to_numpy(dtype=float)
         logged = np.log(values + self.pseudo_count_)
         return logged - logged.mean(axis=1, keepdims=True)
-
-
-class DomainStableCLRFeaturePipeline(CLRFeaturePipeline):
-    """Select features with directionally stable training-domain effects."""
-
-    def fit(
-        self,
-        x_train: pd.DataFrame,
-        y_train: Sequence[int],
-        domains: Sequence[object],
-    ) -> "DomainStableCLRFeaturePipeline":
-        super().fit(x_train, y_train)
-        labels = np.asarray(y_train)
-        domain_values = np.asarray(domains).astype(str)
-        if len(domain_values) != len(x_train):
-            raise ValueError("Training domains must align one-to-one with rows")
-        scaled = self.scaler_.transform(self._clr(x_train.loc[:, self.prevalent_features_]))
-        scaled_frame = pd.DataFrame(scaled, index=x_train.index, columns=self.prevalent_features_)
-        effects = {}
-        for domain in sorted(np.unique(domain_values)):
-            mask = domain_values == domain
-            if np.unique(labels[mask]).size != 2:
-                continue
-            effects[domain] = (
-                scaled_frame.loc[mask & (labels == 1)].mean(axis=0)
-                - scaled_frame.loc[mask & (labels == 0)].mean(axis=0)
-            )
-        if len(effects) < 2:
-            raise ValueError("At least two training domains containing both outcomes are required")
-        effect_frame = pd.DataFrame(effects).T
-        same_direction = (effect_frame.gt(0).all(axis=0) | effect_frame.lt(0).all(axis=0))
-        stable = effect_frame.loc[:, same_direction]
-        if stable.shape[1] < 1:
-            raise ValueError("No directionally stable features remain")
-        ranking = stable.abs().min(axis=0).sort_values(ascending=False)
-        self.selected_features_ = ranking.head(min(self.top_k, len(ranking))).index.tolist()
-        self.domain_effects_ = effect_frame.loc[:, self.selected_features_]
-        self.stable_feature_count_ = int(stable.shape[1])
-        self.audit_.n_selected_features = len(self.selected_features_)
-        return self

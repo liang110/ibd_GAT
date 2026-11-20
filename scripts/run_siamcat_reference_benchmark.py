@@ -34,10 +34,16 @@ def metrics(outcomes: pd.Series, probabilities: pd.Series) -> dict[str, float]:
     }
 
 
-def git_revision(project_root: Path) -> str:
-    return subprocess.check_output(
-        ["git", "rev-parse", "HEAD"], cwd=project_root, text=True
-    ).strip()
+def git_revision(project_root: Path) -> str | None:
+    if not (project_root / ".git").exists():
+        return None
+    try:
+        result = subprocess.run(
+            ["git", "rev-parse", "HEAD"], cwd=project_root, text=True, capture_output=True
+        )
+    except FileNotFoundError:
+        return None
+    return result.stdout.strip() if result.returncode == 0 else None
 
 
 def run_direction(
@@ -173,7 +179,7 @@ def main() -> None:
         "config_sha256": config_sha256,
         "input_manifest_sha256": sha256(inputs / "siamcat_input_manifest.json"),
         "reference_script_sha256": sha256(args.reference_script),
-        "git_revision": git_revision(Path.cwd()),
+        "git_revision": git_revision(Path(__file__).resolve().parents[1]),
         "external_target_summary": aggregate.reset_index().round(6).to_dict(orient="records"),
     }
     (output / "siamcat_reference_summary.json").write_text(

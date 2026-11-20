@@ -1,32 +1,51 @@
-#!/usr/bin/env python3
-"""Recompute known-truth acceptance rates from per-seed records."""
-from __future__ import annotations
+"""Recompute acceptance from each seed's target AUROC and feature recovery."""
 import argparse
+import json
 from pathlib import Path
+
+import numpy as np
 import pandas as pd
 
-def parse_bool(value):
-    if isinstance(value, bool): return value
-    return str(value).strip().lower() in {"true", "1", "yes"}
 
-def main() -> int:
-    p=argparse.ArgumentParser(); p.add_argument('--ledger',type=Path,required=True); a=p.parse_args(); d=pd.read_csv(a.ledger)
-    required={'experiment','scenario','seed','target_roc_auc','n_disease_features_recovered','acceptance_rule','acceptance_pass'}; miss=required-set(d.columns)
-    if miss: raise SystemExit(f'MISSING columns: {sorted(miss)}')
-    expected=[]
-    for _,r in d.iterrows():
-        rule=str(r.acceptance_rule)
-        if rule=='positive_auc_0.70_and_recovery_3_of_6': ok=(float(r.target_roc_auc)>=0.70) and (int(r.n_disease_features_recovered)>=3)
-        elif rule=='negative_auc_0.35_to_0.65': ok=(0.35<=float(r.target_roc_auc)<=0.65)
-        else: raise SystemExit(f'UNKNOWN acceptance rule: {rule}')
-        expected.append(ok)
-    actual=d.acceptance_pass.map(parse_bool).tolist()
-    if expected!=actual:
-        mask=[x!=y for x,y in zip(expected,actual)]
-        print(d.loc[mask,['experiment','scenario','seed','acceptance_rule','acceptance_pass']].to_string(index=False)); return 2
-    if 'truth_denominator' in d.columns:
-        positive=d.acceptance_rule.eq('positive_auc_0.70_and_recovery_3_of_6')
-        denom=pd.to_numeric(d.loc[positive,'truth_denominator'], errors='coerce')
-        if not denom.eq(6).all(): print('FAIL: positive truth denominator is not 6'); return 2
-    out=d.groupby(['experiment','scenario','acceptance_rule'],as_index=False).agg(n_seeds=('seed','size'),n_pass=('acceptance_pass','sum'),mean_auc=('target_roc_auc','mean'),mean_recovered=('n_disease_features_recovered','mean')); out['acceptance_rate']=out.n_pass/out.n_seeds; print(out.to_string(index=False)); return 0
-if __name__=='__main__': raise SystemExit(main())
+def validate_truth(ledger_path, rules_path, summary_path):
+    runs = pd.read_csv(ledger_path)
+    rules = json.loads(rules_path.read_text(encoding="utf8"))["end_to_end_truth_panel"]
+    positive = rules["positive_rule"]
+    negative = rules["negative_rule"]
+    reported = pd.read_csv(summary_path).set_index(["experiment", "scenario"], verify_integrity=True)
+    scenarios = set(rules["observed_acceptance"])
+    keys = {(exp, s) for exp in ("end_to_end_truth_panel", "selector_audit") for s in scenarios}
+    if set(reported.index) != keys or set(runs.groupby(["experiment","scenario"]).groups) != keys:
+        raise ValueError("Missing or unexpected true-signal control")
+    for key, group in runs.groupby(["experiment", "scenario"]):
+        counts = reported.loc[key]
+        if len(group) != rules["seeds_per_scenario"] or group.seed.nunique() != len(group):
+            raise ValueError(f"Seed coverage: {key}")
+        if key[1] in {"batch_only","null_control"}:
+            passes = group.target_roc_auc.between(negative["auroc_min_inclusive"],negative["auroc_max_inclusive"])
+            valid_rules = (group.acceptance_logic.eq("inclusive_interval") & group.truth_denominator.isna()
+                           & group.acceptance_rule.eq("negative_auc_0.35_to_0.65"))
+        else:
+            passes = ((group.target_roc_auc >= positive["auroc_min_inclusive"]) &
+                      (group.n_disease_features_recovered >= positive["recovered_features_min_inclusive"]))
+            valid_rules = (group.acceptance_logic.eq(positive["logic"]) &
+                           group.truth_denominator.eq(positive["truth_denominator"]) &
+                           group.acceptance_rule.eq("positive_auc_0.70_and_recovery_3_of_6"))
+        if not valid_rules.all() or not passes.equals(group.acceptance_pass):
+            raise ValueError(f"Seed-level rule or decision: {key}")
+        if counts.pass_count != passes.sum() or counts.n_seeds != len(group):
+            raise ValueError(f"Reported acceptance count: {key}")
+        if not np.isclose(counts.mean_auroc,group.target_roc_auc.mean(),atol=1e-12,rtol=0):
+            raise ValueError(f"Reported target AUROC: {key}")
+        if key[0] == "end_to_end_truth_panel" and rules["observed_acceptance"][key[1]] != f"{passes.sum()}/{len(group)}":
+            raise ValueError(f"Acceptance rule summary: {key}")
+    print(f"Verified {len(runs)} seed-level decisions and {len(reported)} scenario summaries.")
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--root", type=Path, default=Path("."))
+    root = parser.parse_args().root
+    validate_truth(root / "results/controls/per_seed_acceptance.csv",
+                   root / "results/controls/truth_acceptance_rules.json",
+                   root / "results/comparisons/known_truth_acceptance_summary.csv")

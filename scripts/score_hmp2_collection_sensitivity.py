@@ -52,7 +52,7 @@ def read_inputs(prediction_file, metadata_file, score_file):
 
 
 def cluster_draws(labels):
-    """Reuse the archived participant-level RNG stream and sorted person IDs."""
+    """Draw participant weights in the study’s sorted participant order."""
     token = f"{DIRECTION}|pooled|participant".encode()
     seed = 20261112 + int.from_bytes(hashlib.sha256(token).digest()[:4], "big")
     rng = np.random.default_rng(seed)

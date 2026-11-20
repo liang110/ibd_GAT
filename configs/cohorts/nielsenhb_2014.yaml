@@ -1,5 +1,5 @@
 cohort_id: NielsenHB_2014
-role: locked_external_target_candidate
+role: external_target_for_siamcat_reference
 body_site: stool
 country: Denmark
 study_design: observational_cross_sectional_with_repeated_samples
@@ -18,7 +18,7 @@ source:
     expected_bytes: 624293
     sha256: 168c8650d2893dcb49930b9b85a4187637775c9aae0a8023efb4cca52dc73444
 label_policy:
-  source_column: to_be_audited_from_curated_metadata
+  source_column: study_condition
   no_inference_from_sample_id_or_feature_data: true
   retain_unusable_rows_for_audit: true
 integration_policy:

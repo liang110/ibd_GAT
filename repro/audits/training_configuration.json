@@ -43,7 +43,12 @@
       "full_batch_rewired_seed_indices": "0 through 4"
     },
     "tabular_references": "declared class_weight and random_state settings are in the corresponding benchmark scripts",
-    "gate_b_topology_intervention": {
+    "bootstrap_units": {
+      "primary_draws": 5000,
+      "direct_prism_stratum_transfer_draws": 5000,
+      "topology_intervention": "participant-cluster target draws shared across splits and conditions"
+    },
+    "topology_intervention": {
       "loss": "binary_cross_entropy_with_logits",
       "class_weight": "none",
       "pos_weight": "none",
@@ -55,14 +60,34 @@
       "prediction_batch_size": 128,
       "shuffle": false,
       "torch_threads": 4,
-      "operator_configuration": "results/reconciled_evidence/topology_constraints/formal_topology_runtime_manifest.json",
+      "operator_configuration": "results/topology/training.json",
       "model_seed_formula": "20261110 + direction_index*100000 + split",
       "rewire_seed_formula": "model_seed + 1000 + rewired_seed"
     },
-    "bootstrap_units": {
-      "gate_b": "participant-cluster target draws shared across splits and conditions",
-      "primary_draws": 5000,
-      "direct_prism_stratum_transfer_draws": 5000
+    "xgboost": {
+      "feature_contract": 126,
+      "n_source_splits": 10,
+      "inner_selection_splits": 3,
+      "training_scope": "Source-only inner grid selection for each participant-grouped panel, followed by refit on all rows of that panel before locked target scoring.",
+      "final_refit_uses_all_source_rows": true,
+      "target_labels_used_for_selection_or_refitting": false,
+      "candidate_grid": {
+        "n_estimators": 300,
+        "max_depth": [
+          2,
+          3
+        ],
+        "learning_rate": [
+          0.03,
+          0.1
+        ],
+        "subsample": 0.8,
+        "colsample_bytree": 0.8,
+        "tree_method": "hist",
+        "n_jobs": 1,
+        "early_stopping": false,
+        "class_weighting": "none"
+      }
     }
   },
   "uncertainty": {
@@ -70,18 +95,9 @@
     "target_resampling": "participant-cluster bootstrap",
     "primary_draws": 5000,
     "direct_stratum_transfer_draws": 5000,
-    "direct_stratum_transfer_source": "results/p0_rechecked_20261117/prism_direct_transfer_paired.csv"
+    "direct_stratum_transfer_source": "results/comparisons/prism_direct_transfer_paired.csv"
   },
   "selection": {
-    "target_labels_used_for_refitting_or_selection": false,
-    "historical_preregistration_claim": false
-  },
-  "qa": {
-    "required": [
-      "Real and rewired inputs have zero self-loops; identity has one per node.",
-      "Real versus identity and rewired versus identity have zero input-edge Jaccard overlap.",
-      "edge hash reconstruction passes",
-      "truth acceptance recomputes exactly"
-    ]
+    "target_labels_used_for_refitting_or_selection": false
   }
 }
